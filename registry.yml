@@ -23,3 +23,6 @@
       - serviceinfo-api
       - owner-onboarding
 
+  - ansible.builtin.command: firewall-cmd --add-port=5000/tcp --zone=libvirt
+    become: true
+

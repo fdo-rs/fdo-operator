@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: fdo-manufacturing
+  name: fdo-operator
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: fdo-manufacturing-config
-  namespace: fdo-manufacturing
+  namespace: fdo-operator
 data:
   manufacturing-server.yml: |
     session_store_driver:
@@ -46,7 +46,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: fdo-manufacturing-deployment
-  namespace: fdo-manufacturing
+  namespace: fdo-operator
 spec:
   replicas: 1
   selector:
@@ -59,7 +59,12 @@ spec:
     spec:
       containers:
       - name: fdo-manufacturing-server
-        image: 192.168.122.1:5000/fdo-manufacturing-server:latest
+        image: 192.168.130.1:5000/fdo-manufacturing-server:latest
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
         ports:
           - containerPort: 8080
         volumeMounts:
@@ -69,20 +74,109 @@ spec:
           mountPath: /etc/fdo/ownership_vouchers
         - name: diun-key
           mountPath: /etc/fdo/keys/diun_key.der
+          readOnly: true
         - name: diun-cert
           mountPath: /etc/fdo/keys/diun_cert.pem
+          readOnly: true
         - name: manufacturer-cert
           mountPath: /etc/fdo/keys/manufacturer_cert.pem
+          readOnly: true
         - name: manufacturer-key
           mountPath: /etc/fdo/keys/manufacturer_key.der
+          readOnly: true
         - name: owner-cert
           mountPath: /etc/fdo/keys/owner_cert.pem
+          readOnly: true
         - name: device-ca-key
           mountPath: /etc/fdo/keys/device_ca_key.der
+          readOnly: true
         - name: device-ca-chain
           mountPath: /etc/fdo/keys/device_ca_cert.pem
+          readOnly: true
       volumes:
       - name: config
         configMap:
           name: fdo-manufacturing-config
-
+      - name: diun-key
+        secret:
+          secretName: fdo-diun-key
+          items:
+            - key: diun_key.der
+              path: diun_key.der
+          optional: false
+      - name: diun-cert
+        secret:
+          secretName: fdo-diun-cert
+          items:
+          - key: diun_cert.pem
+            path: diun_cert.pem
+          optional: false
+      - name: manufacturer-cert
+        secret:
+          secretName: fdo-manufacturer-cert
+          items:
+          - key: manufacturer_cert.pem
+            path: manufacturer_cert.pem
+          optional: false
+      - name: manufacturer-key
+        secret:
+          secretName: fdo-manufacturer-key
+          items:
+          - key: manufacturer_key.der
+            path: manufacturer_key.der
+          optional: false
+      - name: owner-cert
+        secret:
+          secretName: fdo-owner-cert
+          items:
+          - key: owner_cert.pem
+            path: owner_cert.pem
+          optional: false
+      - name: device-ca-key
+        secret:
+          secretName: fdo-device-ca-key
+          items:
+          - key: device_ca_key.der
+            path: device_ca_key.der
+          optional: false
+      - name: device-ca-chain
+        secret:
+          secretName: fdo-device-ca-cert
+          items:
+          - key: device_ca_cert.pem
+            path: device_ca_cert.pem
+          optional: false
+      - name: ownership-vouchers
+        persistentVolumeClaim:
+          claimName: ownership-vouchers-pvc
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: ownership-vouchers-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 50Mi
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: ownership-vouchers-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 50Mi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  hostPath:
+    path: "/mnt/fdo"
