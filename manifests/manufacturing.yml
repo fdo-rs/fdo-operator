@@ -182,3 +182,30 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   hostPath:
     path: "/mnt/fdo"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fdo-manufacturing-service
+  namespace: fdo-operator
+spec:
+  selector:
+    app: fdo-manufacturing
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: fdo-manufacturing
+  namespace: fdo-operator
+spec:
+  host: fdo-manufacturing.apps-crc.testing
+  to:
+    kind: Service
+    name: fdo-manufacturing-service
+  port:
+    targetPort: 8080
+  wildcardPolicy: None
