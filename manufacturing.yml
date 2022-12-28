@@ -1,9 +1,4 @@
 apiVersion: v1
-kind: Namespace
-metadata:
-  name: fdo-operator
----
-apiVersion: v1
 kind: ConfigMap
 metadata:
   name: fdo-manufacturing-config
@@ -21,7 +16,7 @@ data:
         path: /etc/fdo/keys/
     bind: 0.0.0.0:8080
     rendezvous_info:
-    - ip: fdo-rendezvous.apps-crc.testing
+    - dns: fdo-rendezvous.apps-crc.testing
       device_port: 8082
       owner_port: 8082
       protocol: http
@@ -74,24 +69,31 @@ spec:
           mountPath: /etc/fdo/ownership_vouchers
         - name: diun-key
           mountPath: /etc/fdo/keys/diun_key.der
+          subPath: diun_key.der
           readOnly: true
         - name: diun-cert
           mountPath: /etc/fdo/keys/diun_cert.pem
+          subPath: diun_cert.pem
           readOnly: true
         - name: manufacturer-cert
           mountPath: /etc/fdo/keys/manufacturer_cert.pem
+          subPath: manufacturer_cert.pem
           readOnly: true
         - name: manufacturer-key
           mountPath: /etc/fdo/keys/manufacturer_key.der
+          subPath: manufacturer_key.der
           readOnly: true
         - name: owner-cert
           mountPath: /etc/fdo/keys/owner_cert.pem
+          subPath: owner_cert.pem
           readOnly: true
         - name: device-ca-key
           mountPath: /etc/fdo/keys/device_ca_key.der
+          subPath: device_ca_key.der
           readOnly: true
         - name: device-ca-chain
           mountPath: /etc/fdo/keys/device_ca_cert.pem
+          subPath: device_ca_cert.pem
           readOnly: true
       volumes:
       - name: config
