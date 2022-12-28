@@ -1,0 +1,25 @@
+---
+- name: Build and publish FDO container images in a local registry
+  gather_facts: false
+  hosts: localhost
+
+  tasks:
+
+  - containers.podman.podman_container:
+      name: container-registry
+      image: docker.io/library/registry:2
+      publish: 5000:5000
+      rm: true
+      state: started
+
+  - ansible.builtin.shell: |
+      podman build -t {{ image }} -f Containerfile.{{ item }} && \
+      podman push --tls-verify=false {{ image }}
+    vars:
+      image: localhost:5000/fdo-{{ item }}-server:latest
+    with_items:
+      - manufacturing
+      - rendezvous
+      - serviceinfo-api
+      - owner-onboarding
+

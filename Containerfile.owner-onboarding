@@ -1,0 +1,13 @@
+FROM quay.io/rockylinux/rockylinux:9
+
+ENV LOG_LEVEL=trace
+
+RUN dnf update -y && dnf install -y fdo-owner-onboarding-server && dnf clean all
+
+RUN mkdir -p /etc/fdo/sessions
+RUN mkdir -p /etc/fdo/owner-onboarding-server.conf.d
+RUN mkdir -p /etc/fdo/ownership_vouchers
+RUN mkdir -p /etc/fdo/keys
+
+EXPOSE 8081
+ENTRYPOINT ["/usr/libexec/fdo/fdo-owner-onboarding-server"]

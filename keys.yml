@@ -1,0 +1,29 @@
+
+---
+- name: Generate keys and certificates
+  gather_facts: false
+  hosts: localhost
+
+  tasks:
+
+  - ansible.builtin.file:
+      path: "{{ playbook_dir }}/keys"
+      state: directory
+
+  - ansible.builtin.command:
+      podman build -t fdo-admin-cli:latest -f Containerfile.admin-cli
+
+  - ansible.builtin.command: |
+      podman run --privileged -d --rm --name fdo-admin-cli \
+        -v {{ playbook_dir }}/keys:/etc/fdo/keys \
+        fdo-admin-cli:latest \
+        generate-key-and-cert \
+        --organization 'Red Hat' \
+        --country IL \
+        --destination-dir '/etc/fdo/keys' \
+        {{ item }}
+    with_items:
+      - diun
+      - manufacturer
+      - device-ca
+      - owner

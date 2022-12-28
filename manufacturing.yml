@@ -1,0 +1,88 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fdo-manufacturing
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fdo-manufacturing-config
+  namespace: fdo-manufacturing
+data:
+  manufacturing-server.yml: |
+    session_store_driver:
+      Directory:
+        path: /etc/fdo/sessions/
+    ownership_voucher_store_driver:
+      Directory:
+        path: /etc/fdo/ownership_vouchers/
+    public_key_store_driver:
+      Directory:
+        path: /etc/fdo/keys/
+    bind: 0.0.0.0:8080
+    rendezvous_info:
+    - ip: fdo-rendezvous.apps-crc.testing
+      device_port: 8082
+      owner_port: 8082
+      protocol: http
+    protocols:
+      plain_di: false
+      diun:
+        key_path: /etc/fdo/keys/diun_key.der
+        cert_path: /etc/fdo/keys/diun_cert.pem
+        key_type: SECP256R1
+        mfg_string_type: SerialNumber
+        allowed_key_storage_types:
+        - FileSystem
+        - Tpm
+    manufacturing:
+      manufacturer_cert_path: /etc/fdo/keys/manufacturer_cert.pem
+      manufacturer_private_key: /etc/fdo/keys/manufacturer_key.der
+      owner_cert_path: /etc/fdo/keys/owner_cert.pem
+      device_cert_ca_private_key: /etc/fdo/keys/device_ca_key.der
+      device_cert_ca_chain: /etc/fdo/keys/device_ca_cert.pem
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fdo-manufacturing-deployment
+  namespace: fdo-manufacturing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fdo-manufacturing
+  template:
+    metadata:
+      labels:
+        app: fdo-manufacturing
+    spec:
+      containers:
+      - name: fdo-manufacturing-server
+        image: 192.168.122.1:5000/fdo-manufacturing-server:latest
+        ports:
+          - containerPort: 8080
+        volumeMounts:
+        - name: config
+          mountPath: /etc/fdo/manufacturing-server.conf.d
+        - name: ownership-vouchers
+          mountPath: /etc/fdo/ownership_vouchers
+        - name: diun-key
+          mountPath: /etc/fdo/keys/diun_key.der
+        - name: diun-cert
+          mountPath: /etc/fdo/keys/diun_cert.pem
+        - name: manufacturer-cert
+          mountPath: /etc/fdo/keys/manufacturer_cert.pem
+        - name: manufacturer-key
+          mountPath: /etc/fdo/keys/manufacturer_key.der
+        - name: owner-cert
+          mountPath: /etc/fdo/keys/owner_cert.pem
+        - name: device-ca-key
+          mountPath: /etc/fdo/keys/device_ca_key.der
+        - name: device-ca-chain
+          mountPath: /etc/fdo/keys/device_ca_cert.pem
+      volumes:
+      - name: config
+        configMap:
+          name: fdo-manufacturing-config
+

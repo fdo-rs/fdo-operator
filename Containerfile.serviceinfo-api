@@ -1,0 +1,12 @@
+FROM quay.io/rockylinux/rockylinux:9
+
+ENV LOG_LEVEL=trace
+
+RUN dnf update -y && dnf install -y fdo-owner-onboarding-server && dnf clean all
+
+RUN mkdir -p /etc/fdo/sessions
+RUN mkdir -p /etc/fdo/serviceinfo-api-server.conf.d
+RUN mkdir -p /etc/fdo/device_specific_serviceinfo
+
+EXPOSE 8083
+ENTRYPOINT ["/usr/libexec/fdo/fdo-serviceinfo-api-server"]
