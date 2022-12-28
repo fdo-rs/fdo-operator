@@ -1,0 +1,7 @@
+FROM quay.io/rockylinux/rockylinux:9
+
+ENV LOG_LEVEL=trace
+
+RUN dnf update -y && dnf install -y fdo-init && dnf clean all
+
+ENTRYPOINT ["/usr/libexec/fdo/fdo-manufacturing-client"]
