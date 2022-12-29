@@ -16,7 +16,7 @@ data:
     owner_public_key_path: /etc/fdo/keys/owner_cert.pem
     owner_addresses:
     - transport: HTTP
-      port: 8081
+      port: 80
       addresses:
         - dns_name: fdo-owner-onboarding.apps-crc.testing
     report_to_rendezvous_endpoint_enabled: true

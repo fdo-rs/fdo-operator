@@ -17,8 +17,8 @@ data:
     bind: 0.0.0.0:8080
     rendezvous_info:
     - dns: fdo-rendezvous.apps-crc.testing
-      device_port: 8082
-      owner_port: 8082
+      device_port: 80
+      owner_port: 80
       protocol: http
     protocols:
       plain_di: false

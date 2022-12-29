@@ -82,7 +82,7 @@ Challenges to address:
 * List generated ownership vouchers
 
   ```
-  oc exec -ti fdo-manufacturing-deployment-<id> -- ls /etc/fdo/ownership_vouchers
+  oc exec -ti fdo-manufacturing-deployment-<id> -- ls -1 /etc/fdo/ownership_vouchers
   ```
 
 * Copy an ownership voucher from a pod
