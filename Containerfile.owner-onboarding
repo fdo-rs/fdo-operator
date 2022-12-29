@@ -9,5 +9,7 @@ RUN mkdir -p /etc/fdo/owner-onboarding-server.conf.d
 RUN mkdir -p /etc/fdo/ownership_vouchers
 RUN mkdir -p /etc/fdo/keys
 
+RUN chmod -R 775 /etc/fdo
+
 EXPOSE 8081
 ENTRYPOINT ["/usr/libexec/fdo/fdo-owner-onboarding-server"]

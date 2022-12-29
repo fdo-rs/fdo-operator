@@ -8,5 +8,7 @@ RUN mkdir -p /etc/fdo/sessions
 RUN mkdir -p /etc/fdo/serviceinfo-api-server.conf.d
 RUN mkdir -p /etc/fdo/device_specific_serviceinfo
 
+RUN chmod -R 775 /etc/fdo
+
 EXPOSE 8083
 ENTRYPOINT ["/usr/libexec/fdo/fdo-serviceinfo-api-server"]

@@ -55,6 +55,7 @@ spec:
       containers:
       - name: fdo-manufacturing-server
         image: 192.168.130.1:5000/fdo-manufacturing-server:latest
+        imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:

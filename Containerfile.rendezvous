@@ -9,5 +9,7 @@ RUN mkdir -p /etc/fdo/stores/rendezvous_registered
 RUN mkdir -p /etc/fdo/stores/rendezvous_sessions
 RUN mkdir -p /etc/fdo/keys
 
+RUN chmod -R 775 /etc/fdo
+
 EXPOSE 8082
 ENTRYPOINT ["/usr/libexec/fdo/fdo-rendezvous-server"]
