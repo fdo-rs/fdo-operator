@@ -5,9 +5,8 @@ ENV LOG_LEVEL=trace
 RUN dnf update -y && dnf install -y fdo-rendezvous-server && dnf clean all
 
 RUN mkdir -p /etc/fdo/rendezvous-server.conf.d
-RUN mkdir -p /etc/fdo/stores/rendezvous_registered
-RUN mkdir -p /etc/fdo/stores/rendezvous_sessions
-RUN mkdir -p /etc/fdo/keys
+RUN mkdir -p /etc/fdo/rendezvous_registered
+RUN mkdir -p /etc/fdo/rendezvous_sessions
 
 RUN chmod -R 775 /etc/fdo
 

@@ -66,6 +66,7 @@ spec:
         volumeMounts:
         - name: config
           mountPath: /etc/fdo/manufacturing-server.conf.d
+          readOnly: true
         - name: ownership-vouchers
           mountPath: /etc/fdo/ownership_vouchers
         - name: diun-key

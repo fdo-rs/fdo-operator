@@ -1,8 +1,13 @@
 ## Development with CodeReady Containers (СRC)
 
-1. Rendezvous server DNS in the manufacturer configuration is `fdo-rendezvous.apps-crc.testing`
-2. Image registry is the IP of the local computer (e.g. `192.168.130.1`)
-3. Using a `hostPath` volume for ownership vouchers
+* Rendezvous server DNS in the manufacturer configuration is `fdo-rendezvous.apps-crc.testing`
+* Image registry is the IP of the local computer (e.g. `192.168.130.1`)
+* Using a `hostPath` volume for ownership vouchers
+
+Challenges to address:
+
+* ServiceInfo configuration - initial user, commands, files, encryption, etc.
+* ServiceInfo API access token in configuration
 
 ## Setting up
 
