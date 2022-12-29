@@ -73,4 +73,15 @@
   ssh -i ~/.crc/machines/crc/id_ecdsa core@$(crc ip)
   ```
 
+* List generated ownership vouchers
+
+  ```
+  oc exec -ti fdo-manufacturing-deployment-<id> -- ls /etc/fdo/ownership_vouchers
+  ```
+
+* Copy an ownership voucher from a pod
+
+  ```sh
+  oc cp fdo-manufacturing-deployment-<id>:/etc/fdo/ownership_vouchers/<filename> <filename>
+  ```
 
