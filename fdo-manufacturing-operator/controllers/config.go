@@ -27,7 +27,7 @@ type Config struct {
 	Bind                        string                   `yaml:"bind"`
 	RendezvousInfo              []fdov1.RendezvousServer `yaml:"rendezvous_info"`
 	Protocols                   Protocols                `yaml:"protocols"`
-	Manufacturing               Manufacturing            `yaml: "manufacturing"`
+	Manufacturing               Manufacturing            `yaml:"manufacturing"`
 }
 
 type Driver struct {
@@ -39,18 +39,18 @@ type Directory struct {
 }
 
 type Protocols struct {
-	PlainDI bool `yaml:"plain_di,omitempty"`
-	DIUN    DIUN `yaml:"diun"`
+	PlainDI bool `yaml:"plain_di"`
+	DIUN    DIUN `yaml:"diun,omitempty"`
 }
 
 type DIUN struct {
-	KeyPath  string `yaml:"key_path,omitempty"`
-	CertPath string `yaml:"cert_path,omitempty"`
+	KeyPath  string `yaml:"key_path"`
+	CertPath string `yaml:"cert_path"`
 	// Allowed values: SECP256R1 or SECP384R1
-	KeyType       string `yaml:"key_type,omitempty"`
-	MFGStringType string `yaml:"mfg_string_type,omitempty"`
+	KeyType       string `yaml:"key_type"`
+	MFGStringType string `yaml:"mfg_string_type"`
 	// Allowed values: FileSystem, Tpm
-	AllowedKeyStorageTypes []string `yaml:"allowed_key_storage_types,omitempty"`
+	AllowedKeyStorageTypes []string `yaml:"allowed_key_storage_types"`
 }
 
 type Manufacturing struct {
