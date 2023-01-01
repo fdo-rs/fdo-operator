@@ -76,21 +76,21 @@ type RendezvousServer struct {
 
 	// Hostname of a rendezvous server, must select either a hostname or an IP address
 	// TODO: Add validation
-	DNS string `json:"dns,omitempty"`
+	DNS string `json:"dns,omitempty" yaml:"dns,omitempty"`
 
 	// IP address of a rendezvous server, must select either an IP address or a hostname
 	// TODO: Add validation
-	IPAddress string `json:"ipAddress,omitempty"`
+	IPAddress string `json:"ipAddress,omitempty" yaml:"ipaddress,omitempty"`
 
 	// Rendezvous port for device connections
-	DevicePort uint16 `json:"devicePort,omitempty"`
+	DevicePort uint16 `json:"devicePort,omitempty" yaml:"device_port,omitempty"`
 
 	// Rendezvous port for owner connections
-	OwnerPort uint16 `json:"ownerPort,omitempty"`
+	OwnerPort uint16 `json:"ownerPort,omitempty" yaml:"owner_port,omitempty"`
 
 	// Rendezvous transport protocol - tcp, tls (default), http, coap, https or coaps
 	// +kubebuilder:validation:Enum=tcp;tls;http;coap;https;coaps
-	Protocol string `json:"protocol,omitempty"`
+	Protocol string `json:"protocol,omitempty" yaml:"protocol,omitempty"`
 }
 
 // FDOManufacturingStatus defines the observed state of FDOManufacturing
