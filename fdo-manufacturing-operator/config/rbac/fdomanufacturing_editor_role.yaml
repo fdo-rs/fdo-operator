@@ -1,0 +1,24 @@
+# permissions for end users to edit fdomanufacturings.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fdomanufacturing-editor-role
+rules:
+- apiGroups:
+  - fdo.example.com
+  resources:
+  - fdomanufacturings
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - fdo.example.com
+  resources:
+  - fdomanufacturings/status
+  verbs:
+  - get
