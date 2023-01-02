@@ -18,8 +18,8 @@ package controllers
 
 import (
 	"context"
-	"fmt"
 
+	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrl "sigs.k8s.io/controller-runtime"
@@ -65,7 +65,13 @@ func (r *FDOManufacturingReconciler) Reconcile(ctx context.Context, req ctrl.Req
 		return ctrl.Result{}, err
 	}
 
-	fdoServer = r.setDefaultValues(fdoServer)
+	config, err := r.generateConfig(fdoServer)
+	if err != nil {
+		log.Error(err, "Failed to generate FDO server configuration")
+		return ctrl.Result{}, err
+	}
+
+	log.Info(config)
 	return ctrl.Result{}, nil
 }
 
@@ -76,13 +82,12 @@ func (r *FDOManufacturingReconciler) SetupWithManager(mgr ctrl.Manager) error {
 		Complete(r)
 }
 
-func (r *FDOManufacturingReconciler) generateConfig(fdoServer *fdov1.FDOManufacturing) string {
-	return fmt.Sprintf(`
-		%s`,
-		"webAppWarFileName,webAppSourceRepositoryURL,webAppSourceRepositoryRef,webAppSourceRepositoryContextDir",
-	)
-}
-
-func (r *FDOManufacturingReconciler) setDefaultValues(fdoServer *fdov1.FDOManufacturing) *fdov1.FDOManufacturing {
-	return nil
+func (r *FDOManufacturingReconciler) generateConfig(fdoServer *fdov1.FDOManufacturing) (string, error) {
+	config := Config{}
+	setValues(&config, fdoServer)
+	v, err := yaml.Marshal(&config)
+	if err != nil {
+		return "", err
+	}
+	return string(v), nil
 }

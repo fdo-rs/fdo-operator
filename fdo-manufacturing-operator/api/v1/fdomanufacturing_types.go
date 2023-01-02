@@ -29,10 +29,6 @@ type FDOManufacturingSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Manufacturing server name
-	// +kubebuilder:validation:Pattern=^[a-z]([-a-z0-9]*[a-z0-9])?$
-	Name string `json:"name"`
-
 	// Desired number of replicas
 	// +kubebuilder:validation:Minimum=0
 	Replicas int32 `json:"replicas"`
@@ -58,16 +54,7 @@ type FDOManufacturingSpec struct {
 	RendezvousServers []RendezvousServer `json:"rendezvousServers"`
 
 	// TODO:
-	// protocols:
-	//   plain_di: false
-	//   diun:
-	//     key_path: /etc/fdo/keys/diun_key.der
-	//     cert_path: /etc/fdo/keys/diun_cert.pem
-	//     key_type: SECP256R1
-	//     mfg_string_type: SerialNumber
-	//     allowed_key_storage_types:
-	//     - FileSystem
-	//     - Tpm
+	Protocols Protocols `json: "protocols"`
 }
 
 //RendezvousServer defines an entry of rendezvous server configuration
@@ -76,21 +63,33 @@ type RendezvousServer struct {
 
 	// Hostname of a rendezvous server, must select either a hostname or an IP address
 	// TODO: Add validation
-	DNS string `json:"dns,omitempty" yaml:"dns,omitempty"`
+	DNS string `json:"dns,omitempty"`
 
 	// IP address of a rendezvous server, must select either an IP address or a hostname
 	// TODO: Add validation
-	IPAddress string `json:"ipAddress,omitempty" yaml:"ipaddress,omitempty"`
+	IPAddress string `json:"ipAddress,omitempty"`
 
 	// Rendezvous port for device connections
-	DevicePort uint16 `json:"devicePort,omitempty" yaml:"device_port,omitempty"`
+	DevicePort uint16 `json:"devicePort,omitempty"`
 
 	// Rendezvous port for owner connections
-	OwnerPort uint16 `json:"ownerPort,omitempty" yaml:"owner_port,omitempty"`
+	OwnerPort uint16 `json:"ownerPort,omitempty"`
 
 	// Rendezvous transport protocol - tcp, tls (default), http, coap, https or coaps
 	// +kubebuilder:validation:Enum=tcp;tls;http;coap;https;coaps
-	Protocol string `json:"protocol,omitempty" yaml:"protocol,omitempty"`
+	Protocol string `json:"protocol,omitempty"`
+}
+
+type Protocols struct {
+	PlainDI bool `json:"plainDI"`
+	DIUN    DIUN `json:"diun,omitempty"`
+}
+
+type DIUN struct {
+	// +kubebuilder:validation:Enum=SECP256R1,SECP384R1
+	KeyType string `json:"keyType"`
+	// +kubebuilder:validation:Enum=FileSystem,Tpm
+	AllowedKeyStorageTypes []string `json:"allowedKeyStorageTypes"`
 }
 
 // FDOManufacturingStatus defines the observed state of FDOManufacturing
