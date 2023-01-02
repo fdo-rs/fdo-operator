@@ -54,7 +54,7 @@ type FDOManufacturingSpec struct {
 	RendezvousServers []RendezvousServer `json:"rendezvousServers"`
 
 	// TODO:
-	Protocols Protocols `json: "protocols"`
+	Protocols Protocols `json:"protocols"`
 }
 
 //RendezvousServer defines an entry of rendezvous server configuration
