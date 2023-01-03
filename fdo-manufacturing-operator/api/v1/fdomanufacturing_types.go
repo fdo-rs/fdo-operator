@@ -54,7 +54,7 @@ type FDOManufacturingSpec struct {
 	RendezvousServers []RendezvousServer `json:"rendezvousServers"`
 
 	// TODO:
-	Protocols Protocols `json:"protocols"`
+	Protocols *Protocols `json:"protocols"`
 }
 
 //RendezvousServer defines an entry of rendezvous server configuration
@@ -81,14 +81,15 @@ type RendezvousServer struct {
 }
 
 type Protocols struct {
-	PlainDI bool `json:"plainDI"`
-	DIUN    DIUN `json:"diun,omitempty"`
+	PlainDI bool  `json:"plainDI"`
+	DIUN    *DIUN `json:"diun,omitempty"`
 }
 
 type DIUN struct {
 	// +kubebuilder:validation:Enum=SECP256R1,SECP384R1
 	KeyType string `json:"keyType"`
 	// +kubebuilder:validation:Enum=FileSystem,Tpm
+	// +kubebuilder:valdation:MinLength=1
 	AllowedKeyStorageTypes []string `json:"allowedKeyStorageTypes"`
 }
 

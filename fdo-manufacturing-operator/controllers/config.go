@@ -23,17 +23,17 @@ import (
 )
 
 type Config struct {
-	SessionStoreDriver          Driver           `yaml:"session_store_driver"`
-	OwnerShipVoucherStoreDriver Driver           `yaml:"ownership_voucher_store_driver"`
-	PublicKeyStoreDriver        Driver           `yaml:"public_key_store_driver"`
+	SessionStoreDriver          *Driver          `yaml:"session_store_driver"`
+	OwnerShipVoucherStoreDriver *Driver          `yaml:"ownership_voucher_store_driver"`
+	PublicKeyStoreDriver        *Driver          `yaml:"public_key_store_driver"`
 	Bind                        string           `yaml:"bind"`
 	RendezvousInfo              []RendezvousInfo `yaml:"rendezvous_info"`
-	Protocols                   Protocols        `yaml:"protocols"`
-	Manufacturing               Manufacturing    `yaml:"manufacturing"`
+	Protocols                   *Protocols       `yaml:"protocols"`
+	Manufacturing               *Manufacturing   `yaml:"manufacturing"`
 }
 
 type Driver struct {
-	Directory Directory `yaml:"Directory"`
+	Directory *Directory `yaml:"Directory"`
 }
 
 type Directory struct {
@@ -41,8 +41,8 @@ type Directory struct {
 }
 
 type Protocols struct {
-	PlainDI bool `yaml:"plain_di"`
-	DIUN    DIUN `yaml:"diun,omitempty"`
+	PlainDI bool  `yaml:"plain_di"`
+	DIUN    *DIUN `yaml:"diun,omitempty"`
 }
 
 type DIUN struct {
@@ -72,19 +72,19 @@ type RendezvousInfo struct {
 }
 
 func setValues(c *Config, fdoServer *fdov1.FDOManufacturing) error {
-	c.SessionStoreDriver = *NewDriver("/etc/fdo/sessions/")
-	c.OwnerShipVoucherStoreDriver = *NewDriver("/etc/fdo/ownership_vouchers/")
-	c.PublicKeyStoreDriver = *NewDriver("/etc/fdo/keys/")
+	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
+	c.OwnerShipVoucherStoreDriver = NewDriver("/etc/fdo/ownership_vouchers/")
+	c.PublicKeyStoreDriver = NewDriver("/etc/fdo/keys/")
 	c.Bind = "0.0.0.0:8080"
 	if err := setRendezvousValues(c, fdoServer.Spec.RendezvousServers); err != nil {
 		return err
 	}
 
-	if err := setProtocolsValues(c, &fdoServer.Spec.Protocols); err != nil {
+	if err := setProtocolsValues(c, fdoServer.Spec.Protocols); err != nil {
 		return err
 	}
 
-	c.Manufacturing = Manufacturing{
+	c.Manufacturing = &Manufacturing{
 		ManufacturerCertPath:   "/etc/fdo/keys/manufacturer_cert.pem",
 		ManufacturerPrivateKey: "/etc/fdo/keys/manufacturer_key.der",
 		OwnerCertPath:          "/etc/fdo/keys/owner_cert.pem",
@@ -114,13 +114,33 @@ func setRendezvousValues(c *Config, r []fdov1.RendezvousServer) error {
 }
 
 func setProtocolsValues(c *Config, p *fdov1.Protocols) error {
-	c.Protocols = Protocols{}
+	if !p.PlainDI && p.DIUN == nil {
+		return fmt.Errorf("DIUN must be configured if plain DI is false")
+	}
+
+	if p.DIUN == nil {
+		c.Protocols = &Protocols{
+			PlainDI: p.PlainDI,
+		}
+		return nil
+	}
+
+	c.Protocols = &Protocols{
+		PlainDI: p.PlainDI,
+		DIUN: &DIUN{
+			KeyPath:                "/etc/fdo/keys/diun_key.der",
+			CertPath:               "/etc/fdo/keys/diun_cert.pem",
+			KeyType:                p.DIUN.KeyType,
+			MFGStringType:          "SerialNumber",
+			AllowedKeyStorageTypes: p.DIUN.AllowedKeyStorageTypes,
+		},
+	}
 	return nil
 }
 
 func NewDriver(path string) *Driver {
 	return &Driver{
-		Directory: Directory{
+		Directory: &Directory{
 			Path: path,
 		},
 	}
