@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
       - name: fdo-owner-onboarding-server
-        image: 192.168.130.1:5000/fdo-owner-onboarding-server:latest
+        image: quay.io/vemporop/fdo-owner-onboarding-server:1.0
         imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false

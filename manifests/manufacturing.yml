@@ -54,7 +54,7 @@ spec:
     spec:
       containers:
       - name: fdo-manufacturing-server
-        image: 192.168.130.1:5000/fdo-manufacturing-server:latest
+        image: quay.io/vemporop/fdo-manufacturing-server:1.0
         imagePullPolicy: Always
         securityContext:
           allowPrivilegeEscalation: false

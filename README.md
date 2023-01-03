@@ -1,7 +1,6 @@
 ## Development with CodeReady Containers (СRC)
 
-* Rendezvous server DNS in the manufacturer configuration is `fdo-rendezvous.apps-crc.testing`
-* Image registry is the IP of the local computer (e.g. `192.168.130.1`)
+* Server hostnames in the configuration assume a CRC cluster, e.g. `fdo-rendezvous.apps-crc.testing`
 * Using a `hostPath` volume for ownership vouchers
 * Without [additional setup](#connecting-to-crc-cluster), the cluster is reachable only from the local machine
 
@@ -24,19 +23,21 @@ Challenges to address:
    ./secrets.sh
    ```
 
-3. Build images and publish them to a local registry
+If using a local registry for FDO container images:
+
+1. Build images and publish them to a local registry
 
    ```sh
    ansible-playbook registry.yml
    ```
 
-4. Add the registry to the list of insecure registries in the cluster
+2. Add the registry to the list of insecure registries in the cluster
 
    ```sh
    oc edit image.config.openshift.io/cluster
    ```
 
-   and insert
+   and insert an entry for your host, e.g.
 
    ```yaml
    spec:
@@ -46,7 +47,7 @@ Challenges to address:
         - 192.168.130.1:5000
    ```
 
-5. Update the registry in the image spec of the pods, e.g. in [manifests/manufacturing.yml](manifests/manufacturing.yml):
+3. Update the registry in the image spec of the pods, e.g. in [manifests/manufacturing.yml](manifests/manufacturing.yml):
 
    ```yaml
    spec:
