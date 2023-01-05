@@ -49,10 +49,32 @@ spec:
                 - ERROR
                 - "OFF"
                 type: string
-              name:
-                description: Manufacturing server name
-                pattern: ^[a-z]([-a-z0-9]*[a-z0-9])?$
-                type: string
+              protocols:
+                description: 'TODO:'
+                properties:
+                  diun:
+                    properties:
+                      allowedKeyStorageTypes:
+                        enum:
+                        - FileSystem
+                        - Tpm
+                        items:
+                          type: string
+                        type: array
+                      keyType:
+                        enum:
+                        - SECP256R1
+                        - SECP384R1
+                        type: string
+                    required:
+                    - allowedKeyStorageTypes
+                    - keyType
+                    type: object
+                  plainDI:
+                    type: boolean
+                required:
+                - plainDI
+                type: object
               rendezvousServers:
                 description: List of rendezvous servers
                 items:
@@ -128,7 +150,7 @@ spec:
                   persistent volumes
                 type: string
             required:
-            - name
+            - protocols
             - rendezvousServers
             - replicas
             type: object

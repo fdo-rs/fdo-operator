@@ -86,9 +86,9 @@ type Protocols struct {
 }
 
 type DIUN struct {
-	// +kubebuilder:validation:Enum=SECP256R1,SECP384R1
+	// +kubebuilder:validation:Enum=SECP256R1;SECP384R1
 	KeyType string `json:"keyType"`
-	// +kubebuilder:validation:Enum=FileSystem,Tpm
+	// +kubebuilder:validation:Enum=FileSystem;Tpm
 	// +kubebuilder:valdation:MinLength=1
 	AllowedKeyStorageTypes []string `json:"allowedKeyStorageTypes"`
 }
