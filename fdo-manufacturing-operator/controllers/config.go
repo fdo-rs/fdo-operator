@@ -95,7 +95,7 @@ func setValues(c *Config, fdoServer *fdov1.FDOManufacturing) error {
 }
 
 func setRendezvousValues(c *Config, r []fdov1.RendezvousServer) error {
-	rendezvousInfo := make([]RendezvousInfo, len(r), 0)
+	rendezvousInfo := make([]RendezvousInfo, len(r))
 	if len(r) == 0 {
 		return fmt.Errorf("rendezvous servers must contain at least one value")
 	}

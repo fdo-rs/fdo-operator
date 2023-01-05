@@ -84,7 +84,10 @@ func (r *FDOManufacturingReconciler) SetupWithManager(mgr ctrl.Manager) error {
 
 func (r *FDOManufacturingReconciler) generateConfig(fdoServer *fdov1.FDOManufacturing) (string, error) {
 	config := Config{}
-	setValues(&config, fdoServer)
+	if err := setValues(&config, fdoServer); err != nil {
+		return "", err
+	}
+
 	v, err := yaml.Marshal(&config)
 	if err != nil {
 		return "", err
