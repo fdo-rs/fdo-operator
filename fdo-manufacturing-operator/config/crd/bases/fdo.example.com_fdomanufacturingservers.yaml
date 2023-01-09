@@ -5,20 +5,21 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.9.0
   creationTimestamp: null
-  name: fdomanufacturings.fdo.example.com
+  name: fdomanufacturingservers.fdo.example.com
 spec:
   group: fdo.example.com
   names:
-    kind: FDOManufacturing
-    listKind: FDOManufacturingList
-    plural: fdomanufacturings
-    singular: fdomanufacturing
+    kind: FDOManufacturingServer
+    listKind: FDOManufacturingServerList
+    plural: fdomanufacturingservers
+    singular: fdomanufacturingserver
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: FDOManufacturing is the Schema for the fdomanufacturings API
+        description: FDOManufacturingServer is the Schema for the fdomanufacturingservers
+          API
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -33,7 +34,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: FDOManufacturingSpec defines the desired state of FDOManufacturing
+            description: FDOManufacturingServerSpec defines the desired state of FDOManufacturingServer
             properties:
               image:
                 description: Container image
@@ -155,7 +156,8 @@ spec:
             - replicas
             type: object
           status:
-            description: FDOManufacturingStatus defines the observed state of FDOManufacturing
+            description: FDOManufacturingServerStatus defines the observed state of
+              FDOManufacturingServer
             properties:
               pods:
                 description: 'INSERT ADDITIONAL STATUS FIELD - define observed state

@@ -1,6 +1,6 @@
 apiVersion: fdo.example.com/v1
-kind: FDOManufacturing
+kind: FDOManufacturingServer
 metadata:
-  name: fdomanufacturing-sample
+  name: fdomanufacturingserver-sample
 spec:
   # TODO(user): Add fields here

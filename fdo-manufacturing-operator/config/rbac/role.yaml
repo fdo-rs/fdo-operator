@@ -8,7 +8,7 @@ rules:
 - apiGroups:
   - fdo.example.com
   resources:
-  - fdomanufacturings
+  - fdomanufacturingservers
   verbs:
   - create
   - delete
@@ -20,13 +20,13 @@ rules:
 - apiGroups:
   - fdo.example.com
   resources:
-  - fdomanufacturings/finalizers
+  - fdomanufacturingservers/finalizers
   verbs:
   - update
 - apiGroups:
   - fdo.example.com
   resources:
-  - fdomanufacturings/status
+  - fdomanufacturingservers/status
   verbs:
   - get
   - patch

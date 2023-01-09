@@ -89,11 +89,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	if err = (&controllers.FDOManufacturingReconciler{
+	if err = (&controllers.FDOManufacturingServerReconciler{
 		Client: mgr.GetClient(),
 		Scheme: mgr.GetScheme(),
 	}).SetupWithManager(mgr); err != nil {
-		setupLog.Error(err, "unable to create controller", "controller", "FDOManufacturing")
+		setupLog.Error(err, "unable to create controller", "controller", "FDOManufacturingServer")
 		os.Exit(1)
 	}
 	//+kubebuilder:scaffold:builder

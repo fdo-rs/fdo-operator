@@ -14,7 +14,7 @@ resources:
   controller: true
   domain: example.com
   group: fdo
-  kind: FDOManufacturing
+  kind: FDOManufacturingServer
   path: github.com/empovit/fdo-operators/api/v1
   version: v1
 version: "3"

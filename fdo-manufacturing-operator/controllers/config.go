@@ -71,7 +71,7 @@ type RendezvousInfo struct {
 	Protocol   string `yaml:"protocol,omitempty"`
 }
 
-func setValues(c *Config, fdoServer *fdov1.FDOManufacturing) error {
+func setValues(c *Config, fdoServer *fdov1.FDOManufacturingServer) error {
 	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
 	c.OwnerShipVoucherStoreDriver = NewDriver("/etc/fdo/ownership_vouchers/")
 	c.PublicKeyStoreDriver = NewDriver("/etc/fdo/keys/")

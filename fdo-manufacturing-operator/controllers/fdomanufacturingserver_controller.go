@@ -29,39 +29,39 @@ import (
 	fdov1 "github.com/empovit/fdo-operators/api/v1"
 )
 
-// FDOManufacturingReconciler reconciles a FDOManufacturing object
-type FDOManufacturingReconciler struct {
+// FDOManufacturingServerReconciler reconciles a FDOManufacturingServer object
+type FDOManufacturingServerReconciler struct {
 	client.Client
 	Scheme *runtime.Scheme
 }
 
-//+kubebuilder:rbac:groups=fdo.example.com,resources=fdomanufacturings,verbs=get;list;watch;create;update;patch;delete
-//+kubebuilder:rbac:groups=fdo.example.com,resources=fdomanufacturings/status,verbs=get;update;patch
-//+kubebuilder:rbac:groups=fdo.example.com,resources=fdomanufacturings/finalizers,verbs=update
+//+kubebuilder:rbac:groups=fdo.example.com,resources=fdomanufacturingservers,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=fdo.example.com,resources=fdomanufacturingservers/status,verbs=get;update;patch
+//+kubebuilder:rbac:groups=fdo.example.com,resources=fdomanufacturingservers/finalizers,verbs=update
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
 // TODO(user): Modify the Reconcile function to compare the state specified by
-// the FDOManufacturing object against the actual cluster state, and then
+// the FDOManufacturingServer object against the actual cluster state, and then
 // perform operations to make the cluster state reflect the state specified by
 // the user.
 //
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.1/pkg/reconcile
-func (r *FDOManufacturingReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
+func (r *FDOManufacturingServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
 	log := logf.FromContext(ctx)
 	log.Info("")
-	log = logf.Log.WithName("fdomanufacturing_controller").WithValues("Request.Namespace", req.Namespace, "Request.Name", req.Name)
+	log = logf.Log.WithName("fdomanufacturingserver_controller").WithValues("Request.Namespace", req.Namespace, "Request.Name", req.Name)
 	log.Info("Reconciling FDO manufacturing server")
 
-	fdoServer := &fdov1.FDOManufacturing{}
+	fdoServer := &fdov1.FDOManufacturingServer{}
 	err := r.Get(ctx, req.NamespacedName, fdoServer)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			log.Info("FDOManufacturing resource not found. Ignoring since object must have been deleted")
+			log.Info("FDOManufacturingServer resource not found. Ignoring since object must have been deleted")
 			return ctrl.Result{}, nil
 		}
-		log.Error(err, "Failed to get FDOManufacturing resource")
+		log.Error(err, "Failed to get FDOManufacturingServer resource")
 		return ctrl.Result{}, err
 	}
 
@@ -76,13 +76,13 @@ func (r *FDOManufacturingReconciler) Reconcile(ctx context.Context, req ctrl.Req
 }
 
 // SetupWithManager sets up the controller with the Manager.
-func (r *FDOManufacturingReconciler) SetupWithManager(mgr ctrl.Manager) error {
+func (r *FDOManufacturingServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&fdov1.FDOManufacturing{}).
+		For(&fdov1.FDOManufacturingServer{}).
 		Complete(r)
 }
 
-func (r *FDOManufacturingReconciler) generateConfig(fdoServer *fdov1.FDOManufacturing) (string, error) {
+func (r *FDOManufacturingServerReconciler) generateConfig(fdoServer *fdov1.FDOManufacturingServer) (string, error) {
 	config := Config{}
 	if err := setValues(&config, fdoServer); err != nil {
 		return "", err
