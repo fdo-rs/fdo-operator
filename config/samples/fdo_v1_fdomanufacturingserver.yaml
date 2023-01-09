@@ -1,0 +1,6 @@
+apiVersion: fdo.redhat.com/v1
+kind: FDOManufacturingServer
+metadata:
+  name: fdomanufacturingserver-sample
+spec:
+  # TODO(user): Add fields here

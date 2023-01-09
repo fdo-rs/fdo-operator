@@ -1,117 +1,94 @@
-## Development with CodeReady Containers (СRC)
+# operators
+// TODO(user): Add simple overview of use/purpose
 
-* Server hostnames in the configuration assume a CRC cluster, e.g. `fdo-rendezvous.apps-crc.testing`
-* Using a `hostPath` volume for ownership vouchers
-* Without [additional setup](#connecting-to-crc-cluster), the cluster is reachable only from the local machine
+## Description
+// TODO(user): An in-depth paragraph about your project and overview of use
 
-Challenges to address:
+## Getting Started
+You’ll need a Kubernetes cluster to run against. You can use [KIND](https://sigs.k8s.io/kind) to get a local cluster for testing, or run against a remote cluster.
+**Note:** Your controller will automatically use the current context in your kubeconfig file (i.e. whatever cluster `kubectl cluster-info` shows).
 
-* ServiceInfo configuration - initial user, commands, files, encryption, etc.
-* ServiceInfo API access token in configuration
+### Running on the cluster
+1. Install Instances of Custom Resources:
 
-## Setting Up
-
-1. Generate keys and certificates
-
-   ```sh
-   ansible-playbook keys.yml
-   ```
-
-2. Create secrets in `fdo-operator`:
-
-   ```sh
-   ./secrets.sh
-   ```
-
-If using a local registry for FDO container images:
-
-1. Build images and publish them to a local registry
-
-   ```sh
-   ansible-playbook registry.yml
-   ```
-
-2. Add the registry to the list of insecure registries in the cluster
-
-   ```sh
-   oc edit image.config.openshift.io/cluster
-   ```
-
-   and insert an entry for your host, e.g.
-
-   ```yaml
-   spec:
-    ...
-    registrySources:
-        insecureRegistries:
-        - 192.168.130.1:5000
-   ```
-
-3. Update the registry in the image spec of the pods, e.g. in [manifests/manufacturing.yml](manifests/manufacturing.yml):
-
-   ```yaml
-   spec:
-     containers:
-     - name: fdo-manufacturing-server
-       image: 192.168.130.1:5000/fdo-manufacturing-server:latest
-   ```
-
-## Testing Device Initialization
-
-1. Build an `fdo-manufacturing-client` (`fdo-init`) container image:
-
-   ```sh
-   podman build -t fdo-init-client:latest -f Containerfile.manufacturing-client
-   ```
-
-2. Run the client in a container by specifying DIUN configuration and a manufacturing server, e.g.:
-
-   ```sh
-   podman run -ti --rm \
-      -e DIUN_PUB_KEY_INSECURE=true \
-      -e MANUFACTURING_SERVER_URL=http://fdo-manufacturing.apps-crc.testing fdo-init-client:latest
-   ```
-
-## Useful Commands
-
-* SSH to the CRC VM
-
-  ```sh
-  ssh -i ~/.crc/machines/crc/id_ecdsa core@$(crc ip)
-  ```
-
-* List generated ownership vouchers
-
-  ```
-  oc exec -ti fdo-manufacturing-deployment-<id> -- ls -1 /etc/fdo/ownership_vouchers
-  ```
-
-* Copy an ownership voucher from a pod
-
-  ```sh
-  oc cp fdo-manufacturing-deployment-<id>:/etc/fdo/ownership_vouchers/<filename> <filename>
-  ```
-
-* Change the FDO manufacturing server of a simplified installer image
-
-  When booting from a simplified installer ISO, press `e` before installing RHEL, then edit kernel arguments:
-
-  ```console
-  ... fdo.manufacturing_server_url=http://hostname:8080 fdo.diun_pub_key_insecure=true ...
-  ```
-
-## Connecting to CRC Cluster
-
-In order to connect to a CRC cluster remotely, a proxy or an SSH tunnel (e.g. using `sshuttle`) must be set up.
-
-In order to allow other VMs (e.g. on `default` network) to access a CRC cluster, which is connected to `crc` network, configure the following, as explained in [Libvirt routing between two NAT networks](https://serverfault.com/questions/1109903/libvirt-routing-between-two-nat-networks)
-
-```console
-sudo iptables -t nat -I POSTROUTING 1 -s 192.168.130.0/24 -d 192.168.122.0/24 -j ACCEPT
-sudo iptables -t nat -I POSTROUTING 1 -s 192.168.122.0/24 -d 192.168.130.0/24 -j ACCEPT
-
-sudo iptables -I FORWARD 1 -s 192.168.122.0/24 -d 192.168.130.0/24 -j ACCEPT
-sudo iptables -I FORWARD 1 -s 192.168.130.0/24 -d 192.168.122.0/24 -j ACCEPT
+```sh
+kubectl apply -f config/samples/
 ```
 
-where `192.168.130.0/24` and `192.168.122.0/24` are the two libvirt networks.
+2. Build and push your image to the location specified by `IMG`:
+	
+```sh
+make docker-build docker-push IMG=<some-registry>/operators:tag
+```
+	
+3. Deploy the controller to the cluster with the image specified by `IMG`:
+
+```sh
+make deploy IMG=<some-registry>/operators:tag
+```
+
+### Uninstall CRDs
+To delete the CRDs from the cluster:
+
+```sh
+make uninstall
+```
+
+### Undeploy controller
+UnDeploy the controller to the cluster:
+
+```sh
+make undeploy
+```
+
+## Contributing
+// TODO(user): Add detailed information on how you would like others to contribute to this project
+
+### How it works
+This project aims to follow the Kubernetes [Operator pattern](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/)
+
+It uses [Controllers](https://kubernetes.io/docs/concepts/architecture/controller/) 
+which provides a reconcile function responsible for synchronizing resources untile the desired state is reached on the cluster 
+
+### Test It Out
+1. Install the CRDs into the cluster:
+
+```sh
+make install
+```
+
+2. Run your controller (this will run in the foreground, so switch to a new terminal if you want to leave it running):
+
+```sh
+make run
+```
+
+**NOTE:** You can also run this in one step by running: `make install run`
+
+### Modifying the API definitions
+If you are editing the API definitions, generate the manifests such as CRs or CRDs using:
+
+```sh
+make manifests
+```
+
+**NOTE:** Run `make --help` for more information on all potential `make` targets
+
+More information can be found via the [Kubebuilder Documentation](https://book.kubebuilder.io/introduction.html)
+
+## License
+
+Copyright 2023.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+

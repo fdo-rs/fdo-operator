@@ -1,0 +1,38 @@
+domain: redhat.com
+layout:
+- go.kubebuilder.io/v3
+plugins:
+  manifests.sdk.operatorframework.io/v2: {}
+  scorecard.sdk.operatorframework.io/v2: {}
+  sdk.x-openshift.io/v1: {}
+projectName: operators
+repo: github.com/empovit/fdo-operators
+resources:
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: redhat.com
+  group: fdo
+  kind: FDORendezvousServer
+  path: github.com/empovit/fdo-operators/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: redhat.com
+  group: fdo
+  kind: FDOOnboardingServer
+  path: github.com/empovit/fdo-operators/api/v1
+  version: v1
+- api:
+    crdVersion: v1
+    namespaced: true
+  controller: true
+  domain: redhat.com
+  group: fdo
+  kind: FDOManufacturingServer
+  path: github.com/empovit/fdo-operators/api/v1
+  version: v1
+version: "3"

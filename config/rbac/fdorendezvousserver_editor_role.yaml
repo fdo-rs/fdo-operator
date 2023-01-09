@@ -1,0 +1,24 @@
+# permissions for end users to edit fdorendezvousservers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fdorendezvousserver-editor-role
+rules:
+- apiGroups:
+  - fdo.redhat.com
+  resources:
+  - fdorendezvousservers
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - fdo.redhat.com
+  resources:
+  - fdorendezvousservers/status
+  verbs:
+  - get

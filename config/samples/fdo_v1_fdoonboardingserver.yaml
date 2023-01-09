@@ -1,0 +1,6 @@
+apiVersion: fdo.redhat.com/v1
+kind: FDOOnboardingServer
+metadata:
+  name: fdoonboardingserver-sample
+spec:
+  # TODO(user): Add fields here

@@ -1,4 +1,3 @@
-
 ---
 - name: Generate keys and certificates
   gather_facts: false
@@ -6,14 +5,17 @@
 
   tasks:
 
-  - ansible.builtin.file:
+  - name: Create directory for keys
+    ansible.builtin.file:
       path: "{{ playbook_dir }}/keys"
       state: directory
 
-  - ansible.builtin.command:
+  - name: Build admin CLI image
+    ansible.builtin.command:
       podman build -t fdo-admin-cli:latest -f Containerfile.admin-cli
 
-  - ansible.builtin.command: |
+  - name: Generate keys for all components
+    ansible.builtin.command: |
       podman run --privileged -d --rm --name fdo-admin-cli \
         -v {{ playbook_dir }}/keys:/etc/fdo/keys \
         fdo-admin-cli:latest \

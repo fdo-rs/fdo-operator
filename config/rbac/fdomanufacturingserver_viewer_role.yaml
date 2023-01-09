@@ -1,0 +1,20 @@
+# permissions for end users to view fdomanufacturingservers.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: fdomanufacturingserver-viewer-role
+rules:
+- apiGroups:
+  - fdo.redhat.com
+  resources:
+  - fdomanufacturingservers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - fdo.redhat.com
+  resources:
+  - fdomanufacturingservers/status
+  verbs:
+  - get
