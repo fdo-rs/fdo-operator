@@ -28,14 +28,56 @@ type FDOOnboardingServerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of FDOOnboardingServer. Edit fdoonboardingserver_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Desired number of replicas
+	// +kubebuilder:validation:Minimum=0
+	Replicas int32 `json:"replicas"`
+
+	// Owner-onboarding server container image
+	OwnerOnboardingImage string `json:"ownerOnboardingImage,omitempty"`
+
+	// ServiceInfo API server container image
+	ServiceInfoImage string `json:"serviceInfoImage,omitempty"`
+
+	// Owner addresses to report to a rendezvous server
+	// +kubebuilder:valdation:MinItems=1
+	OwnerAddresses []OwnerAddress `json:"ownerAddresses,omitempty"`
+}
+
+// OwnerAddress defines an address and transport for contacting to the ownership-onboarding server
+type OwnerAddress struct {
+
+	// Transport
+	// +kubebuilder:validation:Enum=tcp;tls;http;coap;https;coaps
+	// +kubebuilder:default=http
+	Transport string `json:"transport"`
+
+	// Port for reaching the ownership-onboarding server
+	// +kubebuilder:default=80
+	Port uint16 `json:"port"`
+
+	// Addresses defines possible addresses for reaching the ownership-onboarding server by a device
+	Addresses []Address `json:"addresses,omitempty"`
+}
+
+// Address defines a host address represented either by a DNS name or an IP address
+type Address struct {
+	DNSName   string `json:"dnsName,omitempty"`
+	IPAddress string `json:"ipAddress,omitempty"`
 }
 
 // FDOOnboardingServerStatus defines the observed state of FDOOnboardingServer
 type FDOOnboardingServerStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// Pods lists all pods running the onboarding server
+	Pods []string `json:"pods,omitempty"`
+
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
 //+kubebuilder:object:root=true
@@ -48,6 +90,14 @@ type FDOOnboardingServer struct {
 
 	Spec   FDOOnboardingServerSpec   `json:"spec,omitempty"`
 	Status FDOOnboardingServerStatus `json:"status,omitempty"`
+}
+
+func (m *FDOOnboardingServer) GetConditions() []metav1.Condition {
+	return m.Status.Conditions
+}
+
+func (m *FDOOnboardingServer) SetConditions(conditions []metav1.Condition) {
+	m.Status.Conditions = conditions
 }
 
 //+kubebuilder:object:root=true

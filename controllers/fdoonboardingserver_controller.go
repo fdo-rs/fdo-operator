@@ -19,18 +19,19 @@ package controllers
 import (
 	"context"
 
-	"k8s.io/apimachinery/pkg/runtime"
-	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
-
 	fdov1 "github.com/empovit/fdo-operators/api/v1"
+	"github.com/go-logr/logr"
+	util "github.com/redhat-cop/operator-utils/pkg/util"
+	"gopkg.in/yaml.v2"
+	"k8s.io/apimachinery/pkg/api/errors"
+	ctrl "sigs.k8s.io/controller-runtime"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 // FDOOnboardingServerReconciler reconciles a FDOOnboardingServer object
 type FDOOnboardingServerReconciler struct {
-	client.Client
-	Scheme *runtime.Scheme
+	util.ReconcilerBase
+	Log logr.Logger
 }
 
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdoonboardingservers,verbs=get;list;watch;create;update;patch;delete
@@ -47,9 +48,37 @@ type FDOOnboardingServerReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.1/pkg/reconcile
 func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
+	log := logf.FromContext(ctx)
+	log.Info("")
+	log = logf.Log.WithName("fdoonboardingserver_controller").WithValues("Request.Namespace", req.Namespace, "Request.Name", req.Name)
+	log.Info("Reconciling FDO onboarding server")
 
-	// TODO(user): your logic here
+	server := &fdov1.FDOOnboardingServer{}
+	err := r.ReconcilerBase.GetClient().Get(ctx, req.NamespacedName, server)
+	if err != nil {
+		if errors.IsNotFound(err) {
+			log.Info("FDOManufacturingServer resource not found. Ignoring since object must have been deleted")
+			return ctrl.Result{}, nil
+		}
+		log.Error(err, "Failed to get FDOManufacturingServer resource")
+		return ctrl.Result{}, err
+	}
+
+	ownerConf, err := r.generateOwnerOnboardingConfig(server)
+	if err != nil {
+		log.Error(err, "Failed to generate FDO owner-onboarding server configuration")
+		return r.ManageError(ctx, server, err)
+	}
+
+	log.Info(ownerConf)
+
+	serviceInfoConf, err := r.generateServiceInfoAPIConfig(server)
+	if err != nil {
+		log.Error(err, "Failed to generate FDO service info API server configuration")
+		return r.ManageError(ctx, server, err)
+	}
+
+	log.Info(serviceInfoConf)
 
 	return ctrl.Result{}, nil
 }
@@ -59,4 +88,30 @@ func (r *FDOOnboardingServerReconciler) SetupWithManager(mgr ctrl.Manager) error
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&fdov1.FDOOnboardingServer{}).
 		Complete(r)
+}
+
+func (r *FDOOnboardingServerReconciler) generateOwnerOnboardingConfig(fdoServer *fdov1.FDOOnboardingServer) (string, error) {
+	config := OwnerOnboardingServerConfig{}
+	if err := config.setValues(fdoServer); err != nil {
+		return "", err
+	}
+
+	v, err := yaml.Marshal(&config)
+	if err != nil {
+		return "", err
+	}
+	return string(v), nil
+}
+
+func (r *FDOOnboardingServerReconciler) generateServiceInfoAPIConfig(fdoServer *fdov1.FDOOnboardingServer) (string, error) {
+	config := ServiceInfoAPIServerConfig{}
+	if err := config.setValues(fdoServer); err != nil {
+		return "", err
+	}
+
+	v, err := yaml.Marshal(&config)
+	if err != nil {
+		return "", err
+	}
+	return string(v), nil
 }
