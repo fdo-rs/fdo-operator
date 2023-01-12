@@ -36,14 +36,136 @@ spec:
           spec:
             description: FDOManufacturingServerSpec defines the desired state of FDOManufacturingServer
             properties:
-              foo:
-                description: Foo is an example field of FDOManufacturingServer. Edit
-                  fdomanufacturingserver_types.go to remove/update
+              image:
+                description: Container image
                 type: string
+              logLevel:
+                description: 'Log level: TRACE, DEBUG, INFO(default), WARN, ERROR
+                  or OFF'
+                enum:
+                - TRACE
+                - DEBUG
+                - INFO
+                - WARN
+                - ERROR
+                - "OFF"
+                type: string
+              protocols:
+                description: 'TODO:'
+                properties:
+                  diun:
+                    properties:
+                      allowedKeyStorageTypes:
+                        enum:
+                        - FileSystem
+                        - Tpm
+                        items:
+                          type: string
+                        type: array
+                      keyType:
+                        enum:
+                        - SECP256R1
+                        - SECP384R1
+                        type: string
+                    required:
+                    - allowedKeyStorageTypes
+                    - keyType
+                    type: object
+                  plainDI:
+                    type: boolean
+                required:
+                - plainDI
+                type: object
+              rendezvousServers:
+                description: List of rendezvous servers
+                items:
+                  description: 'RendezvousServer defines an entry of rendezvous server
+                    configuration TODO: Implement full configuration parameters of
+                    the reference implementation'
+                  properties:
+                    devicePort:
+                      description: Rendezvous port for device connections
+                      type: integer
+                    dns:
+                      description: 'Hostname of a rendezvous server, must select either
+                        a hostname or an IP address TODO: Add validation'
+                      type: string
+                    ipAddress:
+                      description: 'IP address of a rendezvous server, must select
+                        either an IP address or a hostname TODO: Add validation'
+                      type: string
+                    ownerPort:
+                      description: Rendezvous port for owner connections
+                      type: integer
+                    protocol:
+                      description: Rendezvous transport protocol - tcp, tls (default),
+                        http, coap, https or coaps
+                      enum:
+                      - tcp
+                      - tls
+                      - http
+                      - coap
+                      - https
+                      - coaps
+                      type: string
+                  type: object
+                type: array
+                x-kubernetes-list-type: atomic
+              replicas:
+                description: Desired number of replicas
+                format: int32
+                minimum: 0
+                type: integer
+              resources:
+                description: Resources allocated for a manufacturing server pod (e.g.
+                  CPU)
+                properties:
+                  limits:
+                    additionalProperties:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                      x-kubernetes-int-or-string: true
+                    description: 'Limits describes the maximum amount of compute resources
+                      allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                    type: object
+                  requests:
+                    additionalProperties:
+                      anyOf:
+                      - type: integer
+                      - type: string
+                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                      x-kubernetes-int-or-string: true
+                    description: 'Requests describes the minimum amount of compute
+                      resources required. If Requests is omitted for a container,
+                      it defaults to Limits if that is explicitly specified, otherwise
+                      to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                    type: object
+                type: object
+              routeHost:
+                description: Hostname of the route the server will be exposed through
+                type: string
+              storageClassName:
+                description: Name of the storage class to use for ownership vouchers
+                  persistent volumes
+                type: string
+            required:
+            - protocols
+            - rendezvousServers
+            - replicas
             type: object
           status:
             description: FDOManufacturingServerStatus defines the observed state of
               FDOManufacturingServer
+            properties:
+              pods:
+                description: 'INSERT ADDITIONAL STATUS FIELD - define observed state
+                  of cluster Important: Run "make" to regenerate code after modifying
+                  this file'
+                items:
+                  type: string
+                type: array
             type: object
         type: object
     served: true

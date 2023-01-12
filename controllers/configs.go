@@ -25,11 +25,11 @@ import (
 const ServiceInfoAuthToken = "ExampleAuthToken"
 
 type Driver struct {
-	Directory *Directory `yaml:"Directory"`
+	Directory *Directory `yaml:"Directory,omitempty"`
 }
 
 type Directory struct {
-	Path string `yaml:"path"`
+	Path string `yaml:"path,omitempty"`
 }
 
 func NewDriver(path string) *Driver {
@@ -41,16 +41,16 @@ func NewDriver(path string) *Driver {
 }
 
 type OwnerOnboardingServerConfig struct {
-	SessionStoreDriver           *Driver                      `yaml:"session_store_driver"`
-	OwnerShipVoucherStoreDriver  *Driver                      `yaml:"ownership_voucher_store_driver"`
-	Bind                         string                       `yaml:"bind"`
-	TrustedDeviceKeysPath        string                       `yaml:"trusted_device_keys_path"`
-	OwnerPrivateKeyPath          string                       `yaml:"owner_private_key_path"`
-	OwnerPublicKeyPath           string                       `yaml:"owner_public_key_path"`
-	OwnerAddresses               []OwnerAddress               `yaml:"owner_addresses"`
-	ReportToRendezvousEndpoint   bool                         `yaml:"report_to_rendezvous_endpoint_enabled"`
-	ServiceInfoAPIURL            string                       `yaml:"service_info_api_url"`
-	ServiceInfoAPIAuthentication ServiceInfoAPIAuthentication `yaml:"service_info_api_authentication"`
+	SessionStoreDriver           *Driver                       `yaml:"session_store_driver"`
+	OwnerShipVoucherStoreDriver  *Driver                       `yaml:"ownership_voucher_store_driver"`
+	Bind                         string                        `yaml:"bind"`
+	TrustedDeviceKeysPath        string                        `yaml:"trusted_device_keys_path"`
+	OwnerPrivateKeyPath          string                        `yaml:"owner_private_key_path"`
+	OwnerPublicKeyPath           string                        `yaml:"owner_public_key_path"`
+	OwnerAddresses               []OwnerAddress                `yaml:"owner_addresses"`
+	ReportToRendezvousEndpoint   bool                          `yaml:"report_to_rendezvous_endpoint_enabled"`
+	ServiceInfoAPIURL            string                        `yaml:"service_info_api_url"`
+	ServiceInfoAPIAuthentication *ServiceInfoAPIAuthentication `yaml:"service_info_api_authentication"`
 }
 
 type OwnerAddress struct {
@@ -94,16 +94,16 @@ func NewAddress(o *fdov1.Address) (*Address, error) {
 }
 
 type ServiceInfoAPIAuthentication struct {
-	BearerToken BearerToken `yaml:"BearerToken"`
+	BearerToken *BearerToken `yaml:"BearerToken,omitempty"`
 }
 
 type BearerToken struct {
-	Token string `yaml:"token"`
+	Token string `yaml:"token,omitempty"`
 }
 
 func NewServiceInfoAPIAuthentication(token string) *ServiceInfoAPIAuthentication {
 	return &ServiceInfoAPIAuthentication{
-		BearerToken: BearerToken{
+		BearerToken: &BearerToken{
 			Token: token,
 		},
 	}
@@ -131,31 +131,168 @@ func (c *OwnerOnboardingServerConfig) setValues(server *fdov1.FDOOnboardingServe
 	}
 	c.ReportToRendezvousEndpoint = true
 	c.ServiceInfoAPIURL = "http://127.0.0.1:8083/device_info"
-	c.ServiceInfoAPIAuthentication = *NewServiceInfoAPIAuthentication(ServiceInfoAuthToken)
+	c.ServiceInfoAPIAuthentication = NewServiceInfoAPIAuthentication(ServiceInfoAuthToken)
 	return nil
 }
 
 type ServiceInfoAPIServerConfig struct {
-	Bind                      string      `yaml:"bind"`
-	DeviceSpecificStoreDriver *Driver     `yaml:"device_specific_store_driver"`
-	ServiceInfoAuthToken      string      `yaml:"service_info_auth_token"`
-	ServiceInfo               ServiceInfo `yaml:"service_info"`
+	Bind                      string       `yaml:"bind"`
+	DeviceSpecificStoreDriver *Driver      `yaml:"device_specific_store_driver"`
+	ServiceInfoAuthToken      string       `yaml:"service_info_auth_token"`
+	ServiceInfoAdminAuthToken string       `yaml:"admin_auth_token,omitempty"`
+	ServiceInfo               *ServiceInfo `yaml:"service_info"`
 }
 
 type ServiceInfo struct {
-	InitialUser InitialUser `yaml:"initial_user"`
-	// TODO: add commands, files, and disk operations
+	InitialUser            *ServiceInfoInitialUser           `yaml:"initial_user,omitempty"`
+	Files                  []ServiceInfoFile                 `yaml:"files,omitempty"`
+	Commands               []ServiceInfoCommand              `yaml:"commands,omitempty"`
+	DiskEncryptionClevises []ServiceInfoDiskEncryptionClevis `yaml:"diskencryption_clevis,omitempty"`
+	// TODO: implement additional services info
 }
 
-type InitialUser struct {
+type ServiceInfoInitialUser struct {
 	Username string   `yaml:"username"`
 	SSHKeys  []string `yaml:"sshkeys"`
+}
+
+type ServiceInfoFile struct {
+	Path        string `yaml:"path"`
+	Permissions string `yaml:"permissions,omitempty"`
+	SourcePath  string `yaml:"source_path"`
+}
+
+type ServiceInfoCommand struct {
+	Command      string   `yaml:"command"`
+	Args         []string `yaml:"args"`
+	MayFail      bool     `yaml:"may_fail"`
+	ReturnStdOut bool     `yaml:"return_stdout"`
+	ReturnStdErr bool     `yaml:"return_stderr"`
+}
+
+type ServiceInfoDiskEncryptionClevis struct {
+	DiskLabel string                                  `yaml:"disk_label"`
+	Binding   *ServiceInfoDiskEncryptionClevisBinding `yaml:"binding"`
+	ReEncrypt bool                                    `yaml:"reencrypt"`
+}
+
+type ServiceInfoDiskEncryptionClevisBinding struct {
+	Pin    string `yaml:"pin,omitempty"`
+	Config string `yaml:"config,omitempty"`
 }
 
 func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1.FDOOnboardingServer) error {
 	c.Bind = "0.0.0.0:8083"
 	c.DeviceSpecificStoreDriver = NewDriver("/etc/fdo/device_specific_serviceinfo")
 	c.ServiceInfoAuthToken = ServiceInfoAuthToken
-	// TODO: Update the CRD, validate its service info and copy from it
+	// TODO: Add missing fields to the CRD, validate its service info and copy from it
+	return nil
+}
+
+type ManufacturingServerConfig struct {
+	SessionStoreDriver          *Driver          `yaml:"session_store_driver"`
+	OwnerShipVoucherStoreDriver *Driver          `yaml:"ownership_voucher_store_driver"`
+	PublicKeyStoreDriver        *Driver          `yaml:"public_key_store_driver"`
+	Bind                        string           `yaml:"bind"`
+	RendezvousInfo              []RendezvousInfo `yaml:"rendezvous_info"`
+	Protocols                   *Protocols       `yaml:"protocols"`
+	Manufacturing               *Manufacturing   `yaml:"manufacturing"`
+}
+
+type Protocols struct {
+	PlainDI bool  `yaml:"plain_di"`
+	DIUN    *DIUN `yaml:"diun,omitempty"`
+}
+
+type DIUN struct {
+	KeyPath  string `yaml:"key_path"`
+	CertPath string `yaml:"cert_path"`
+	// Allowed values: SECP256R1 or SECP384R1
+	KeyType       string `yaml:"key_type"`
+	MFGStringType string `yaml:"mfg_string_type"`
+	// Allowed values: FileSystem, Tpm
+	AllowedKeyStorageTypes []string `yaml:"allowed_key_storage_types"`
+}
+
+type Manufacturing struct {
+	ManufacturerCertPath   string `yaml:"manufacturer_cert_path"`
+	ManufacturerPrivateKey string `yaml:"manufacturer_private_key"`
+	OwnerCertPath          string `yaml:"owner_cert_path"`
+	DeviceCertCAPrivateKey string `yaml:"device_cert_ca_private_key"`
+	DeviceCertCAChain      string `yaml:"device_cert_ca_chain"`
+}
+
+type RendezvousInfo struct {
+	DNS        string `yaml:"dns,omitempty"`
+	IPAddress  string `yaml:"ipaddress,omitempty"`
+	DevicePort uint16 `yaml:"device_port,omitempty"`
+	OwnerPort  uint16 `yaml:"owner_port,omitempty"`
+	Protocol   string `yaml:"protocol,omitempty"`
+}
+
+func (c *ManufacturingServerConfig) setValues(server *fdov1.FDOManufacturingServer) error {
+	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
+	c.OwnerShipVoucherStoreDriver = NewDriver("/etc/fdo/ownership_vouchers/")
+	c.PublicKeyStoreDriver = NewDriver("/etc/fdo/keys/")
+	c.Bind = "0.0.0.0:8080"
+	if err := c.setRendezvousValues(server.Spec.RendezvousServers); err != nil {
+		return err
+	}
+
+	if err := c.setProtocolsValues(server.Spec.Protocols); err != nil {
+		return err
+	}
+
+	c.Manufacturing = &Manufacturing{
+		ManufacturerCertPath:   "/etc/fdo/keys/manufacturer_cert.pem",
+		ManufacturerPrivateKey: "/etc/fdo/keys/manufacturer_key.der",
+		OwnerCertPath:          "/etc/fdo/keys/owner_cert.pem",
+		DeviceCertCAPrivateKey: "/etc/fdo/keys/device_ca_key.der",
+		DeviceCertCAChain:      "/etc/fdo/keys/device_ca_cert.pem",
+	}
+	return nil
+}
+
+func (c *ManufacturingServerConfig) setRendezvousValues(r []fdov1.RendezvousServer) error {
+	rendezvousInfo := make([]RendezvousInfo, len(r))
+	if len(r) == 0 {
+		return fmt.Errorf("rendezvous servers must contain at least one value")
+	}
+	for i, s := range r {
+		if s.DNS != "" && s.IPAddress != "" {
+			return fmt.Errorf("cannot use both DNS and IP address for rendezvous server")
+		}
+
+		if s.DNS == "" && s.IPAddress == "" {
+			return fmt.Errorf("either a DNS or IP address is required for rendezvous server")
+		}
+		rendezvousInfo[i] = RendezvousInfo(s)
+	}
+	c.RendezvousInfo = rendezvousInfo
+	return nil
+}
+
+func (c *ManufacturingServerConfig) setProtocolsValues(p *fdov1.Protocols) error {
+	if !p.PlainDI && p.DIUN == nil {
+		return fmt.Errorf("DIUN must be configured if plain DI is false")
+	}
+
+	if p.DIUN == nil {
+		c.Protocols = &Protocols{
+			PlainDI: p.PlainDI,
+		}
+		return nil
+	}
+
+	c.Protocols = &Protocols{
+		PlainDI: p.PlainDI,
+		DIUN: &DIUN{
+			KeyPath:                "/etc/fdo/keys/diun_key.der",
+			CertPath:               "/etc/fdo/keys/diun_cert.pem",
+			KeyType:                p.DIUN.KeyType,
+			MFGStringType:          "SerialNumber",
+			AllowedKeyStorageTypes: p.DIUN.AllowedKeyStorageTypes,
+		},
+	}
 	return nil
 }

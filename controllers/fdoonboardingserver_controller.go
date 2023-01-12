@@ -66,7 +66,6 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	ownerConf, err := r.generateOwnerOnboardingConfig(server)
 	if err != nil {
-		log.Error(err, "Failed to generate FDO owner-onboarding server configuration")
 		return r.ManageError(ctx, server, err)
 	}
 
@@ -74,13 +73,12 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	serviceInfoConf, err := r.generateServiceInfoAPIConfig(server)
 	if err != nil {
-		log.Error(err, "Failed to generate FDO service info API server configuration")
 		return r.ManageError(ctx, server, err)
 	}
 
 	log.Info(serviceInfoConf)
 
-	return ctrl.Result{}, nil
+	return r.ManageSuccess(ctx, server)
 }
 
 // SetupWithManager sets up the controller with the Manager.
