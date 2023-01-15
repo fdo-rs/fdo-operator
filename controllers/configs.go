@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	fdov1 "github.com/empovit/fdo-operators/api/v1"
+	routev1 "github.com/openshift/api/route/v1"
 )
 
 const ServiceInfoAuthToken = "ExampleAuthToken"
@@ -60,6 +61,9 @@ type OwnerAddress struct {
 }
 
 func NewOwnerAddress(o *fdov1.OwnerAddress) (*OwnerAddress, error) {
+	if len(o.Addresses) == 0 {
+		return nil, fmt.Errorf("at lease one DNS name or IP address is required for owner address")
+	}
 	ownAddr := &OwnerAddress{
 		Port:      o.Port,
 		Transport: o.Transport,
@@ -76,8 +80,8 @@ func NewOwnerAddress(o *fdov1.OwnerAddress) (*OwnerAddress, error) {
 }
 
 type Address struct {
-	DNSName   string `yaml:"dns_name"`
-	IPAddress string `yaml:"ip_address"`
+	DNSName   string `yaml:"dns_name,omitempty"`
+	IPAddress string `yaml:"ip_address,omitempty"`
 }
 
 func NewAddress(o *fdov1.Address) (*Address, error) {
@@ -109,7 +113,7 @@ func NewServiceInfoAPIAuthentication(token string) *ServiceInfoAPIAuthentication
 	}
 }
 
-func (c *OwnerOnboardingServerConfig) setValues(server *fdov1.FDOOnboardingServer) error {
+func (c *OwnerOnboardingServerConfig) setValues(server *fdov1.FDOOnboardingServer, route *routev1.Route) error {
 	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
 	c.OwnerShipVoucherStoreDriver = NewDriver("/etc/fdo/ownership_vouchers/")
 	c.Bind = "0.0.0.0:8081"
@@ -118,16 +122,29 @@ func (c *OwnerOnboardingServerConfig) setValues(server *fdov1.FDOOnboardingServe
 	c.OwnerPublicKeyPath = "/etc/fdo/keys/owner_cert.pem"
 
 	if len(server.Spec.OwnerAddresses) == 0 {
-		// TODO: Set default if not specified
-		return fmt.Errorf("owner addresses must contain at least one value")
-	}
-	c.OwnerAddresses = make([]OwnerAddress, len(server.Spec.OwnerAddresses))
-	for i, a := range server.Spec.OwnerAddresses {
-		ownAddr, err := NewOwnerAddress(&a)
-		if err != nil {
-			return err
+		if route.Spec.Host == "" {
+			return fmt.Errorf("owner addresses must contain at least one value")
 		}
-		c.OwnerAddresses[i] = *ownAddr
+		c.OwnerAddresses = []OwnerAddress{
+			{
+				Transport: "http",
+				Port:      80,
+				Addresses: []Address{
+					{
+						DNSName: route.Spec.Host,
+					},
+				},
+			},
+		}
+	} else {
+		c.OwnerAddresses = make([]OwnerAddress, len(server.Spec.OwnerAddresses))
+		for i, a := range server.Spec.OwnerAddresses {
+			ownAddr, err := NewOwnerAddress(&a)
+			if err != nil {
+				return err
+			}
+			c.OwnerAddresses[i] = *ownAddr
+		}
 	}
 	c.ReportToRendezvousEndpoint = true
 	c.ServiceInfoAPIURL = "http://127.0.0.1:8083/device_info"

@@ -25,6 +25,7 @@ import (
 	util "github.com/redhat-cop/operator-utils/pkg/util"
 	_ "k8s.io/client-go/plugin/pkg/client/auth"
 
+	routev1 "github.com/openshift/api/route/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	clientgoscheme "k8s.io/client-go/kubernetes/scheme"
@@ -47,6 +48,8 @@ func init() {
 
 	utilruntime.Must(fdov1.AddToScheme(scheme))
 	//+kubebuilder:scaffold:scheme
+
+	utilruntime.Must(routev1.AddToScheme(scheme))
 }
 
 func main() {

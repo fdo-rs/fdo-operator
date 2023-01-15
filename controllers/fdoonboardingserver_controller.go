@@ -21,6 +21,7 @@ import (
 
 	fdov1 "github.com/empovit/fdo-operators/api/v1"
 	"github.com/go-logr/logr"
+	routev1 "github.com/openshift/api/route/v1"
 	util "github.com/redhat-cop/operator-utils/pkg/util"
 	"gopkg.in/yaml.v2"
 	appsv1 "k8s.io/api/apps/v1"
@@ -39,12 +40,20 @@ type FDOOnboardingServerReconciler struct {
 	Log logr.Logger
 }
 
-type serviceType string
+type FDOServiceType string
 
 const (
-	manufacturing serviceType = "manufacturing"
-	onboarding    serviceType = "owner-onboarding"
-	rendezvous    serviceType = "rendezvous"
+	ManufacturingServiceType   FDOServiceType = "manufacturing"
+	OwnerOnboardingServiceType FDOServiceType = "owner-onboarding"
+	RendezvousServiceType      FDOServiceType = "rendezvous"
+)
+
+const (
+	ownerOnboardingConfigMap    = "fdo-owner-onboarding-config"
+	serviceInfoAPIConfigMap     = "fdo-serviceinfo-api-config"
+	ownershipVouchersPVC        = "fdo-ownership-vouchers-pvc"
+	ownerOnboardingDefaultImage = "quay.io/vemporop/fdo-owner-onboarding-server:1.0"
+	serviceInfoAPIDefaultImage  = "quay.io/vemporop/fdo-serviceinfo-api-server:1.0"
 )
 
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdoonboardingservers,verbs=get;list;watch;create;update;patch;delete
@@ -61,63 +70,187 @@ const (
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.1/pkg/reconcile
 func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-
 	log := logf.FromContext(ctx)
 	log.Info("")
 	log = logf.Log.WithName("fdoonboardingserver_controller").WithValues("Request.Namespace", req.Namespace, "Request.Name", req.Name)
 	log.Info("Reconciling FDO onboarding server")
 
-	server := &fdov1.FDOOnboardingServer{}
-	err := r.ReconcilerBase.GetClient().Get(ctx, req.NamespacedName, server)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			log.Info("FDOManufacturingServer resource not found. Ignoring since object must have been deleted")
-			return ctrl.Result{}, nil
-		}
-		log.Error(err, "Failed to get FDOManufacturingServer resource")
-		return ctrl.Result{}, err
-	}
-
-	foundDep := &appsv1.Deployment{}
-	err = r.GetClient().Get(ctx, types.NamespacedName{Name: server.Name, Namespace: server.Namespace}, foundDep)
-	if err != nil && errors.IsNotFound(err) {
-		dep := r.createDeploymentSpec(server)
-		log.Info("Creating a new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-		err = r.GetClient().Create(ctx, dep)
-		if err != nil {
-			log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", dep.Namespace, "Deployment.Name", dep.Name)
-			return ctrl.Result{}, err
-		}
-		return ctrl.Result{Requeue: true}, nil
-	} else if err != nil {
-		log.Error(err, "Failed to get Deployment")
-		return ctrl.Result{}, err
-	}
-
 	// 1. Create/update deployment
 	//	  a. Ensure the deployment size is the same as the spec
 	// 	  b. Update the owner-onboarding image
 	// 	  c. Update the serviceinfo-api image
+	//	  d. Config maps are updated
+	//	  e. Secrets are updated
+	//    f. OV volume is updated
 	// 2. Create/update onboarding service
 	// 3. Create/update onboarding route
 	// 4. Create/update owner-onboarding config map
 	// 5. Create/update serviceinfo-api config map
 
-	ownerConf, err := r.generateOwnerOnboardingConfig(server)
+	// TODO: Fix ServiceInfoAPI config structure
+	// TODO: Create/update PVC or require from user?
+	// TODO: How to enforce the mandatory secrets?
+
+	server, ok, err := r.getOnboardingServer(log, ctx, req)
+	if !ok {
+		return ctrl.Result{}, err
+	}
+
+	r.setDefaultValues(server)
+	_, err = r.getOrCreateOrUpdateDeployment(log, ctx, req, server)
 	if err != nil {
 		return r.ManageError(ctx, server, err)
 	}
+	_, err = r.getOrCreateOrUpdateService(log, ctx, req, server)
+	if err != nil {
+		return r.ManageError(ctx, server, err)
+	}
+	route, err := r.getOrCreateOrUpdateRoute(log, ctx, req, server)
+	if err != nil {
+		return r.ManageError(ctx, server, err)
+	}
+	_, err = r.getOrCreateOrUpdateOwnerOnboardingConfigMap(log, ctx, req, server, route)
+	if err != nil {
+		return r.ManageError(ctx, server, err)
+	}
+	_, err = r.getOrCreateOrUpdateServiceInfoAPIConfigMap(log, ctx, req, server)
+	if err != nil {
+		return r.ManageError(ctx, server, err)
+	}
+	return r.ManageSuccess(ctx, server)
+}
 
-	log.Info(ownerConf)
+func (r *FDOOnboardingServerReconciler) getOnboardingServer(log logr.Logger, ctx context.Context, req ctrl.Request) (*fdov1.FDOOnboardingServer, bool, error) {
+	server := &fdov1.FDOOnboardingServer{}
+	err := r.ReconcilerBase.GetClient().Get(ctx, req.NamespacedName, server)
+	if err == nil {
+		return server, true, nil
+	}
+	if errors.IsNotFound(err) {
+		log.Info("FDOManufacturingServer resource not found. Ignoring since object must have been deleted")
+		return nil, false, nil
+	}
+	log.Error(err, "Failed to get FDOManufacturingServer resource")
+	return nil, false, err
+}
 
+func (r *FDOOnboardingServerReconciler) setDefaultValues(server *fdov1.FDOOnboardingServer) {
+	if server.Spec.OwnerOnboardingImage == "" {
+		server.Spec.OwnerOnboardingImage = ownerOnboardingDefaultImage
+	}
+	if server.Spec.ServiceInfoImage == "" {
+		server.Spec.ServiceInfoImage = serviceInfoAPIDefaultImage
+	}
+}
+
+func (r *FDOOnboardingServerReconciler) getOrCreateOrUpdateDeployment(log logr.Logger, ctx context.Context, req ctrl.Request, server *fdov1.FDOOnboardingServer) (*appsv1.Deployment, error) {
+	deploy := &appsv1.Deployment{}
+	err := r.GetClient().Get(ctx, types.NamespacedName{Name: server.Name, Namespace: server.Namespace}, deploy)
+	if err == nil {
+		return deploy, nil
+	}
+	if !errors.IsNotFound(err) {
+		log.Error(err, "Failed to get Deployment")
+		return nil, err
+	}
+	deploy = r.createDeploymentSpec(server)
+	log.Info("Creating a new Deployment", "Deployment.Namespace", server.Namespace, "Deployment.Name", server.Name)
+	err = r.GetClient().Create(ctx, deploy)
+	if err != nil {
+		log.Error(err, "Failed to create new Deployment", "Deployment.Namespace", server.Namespace, "Deployment.Name", server.Name)
+		return nil, err
+	}
+	return deploy, nil
+}
+
+func (r *FDOOnboardingServerReconciler) getOrCreateOrUpdateService(log logr.Logger, ctx context.Context, req ctrl.Request, server *fdov1.FDOOnboardingServer) (*corev1.Service, error) {
+	svc := &corev1.Service{}
+	err := r.GetClient().Get(ctx, types.NamespacedName{Name: server.Name, Namespace: server.Namespace}, svc)
+	if err == nil {
+		return svc, nil
+	}
+	if !errors.IsNotFound(err) {
+		log.Error(err, "Failed to get Service")
+		return nil, err
+	}
+	svc = r.createServiceSpec(server)
+	log.Info("Creating a new Service", "Service.Namespace", server.Namespace, "Service.Name", server.Name)
+	err = r.GetClient().Create(ctx, svc)
+	if err != nil {
+		log.Error(err, "Failed to create new Service", "Service.Namespace", server.Namespace, "Service.Name", server.Name)
+		return nil, err
+	}
+	return svc, nil
+}
+
+func (r *FDOOnboardingServerReconciler) getOrCreateOrUpdateRoute(log logr.Logger, ctx context.Context, req ctrl.Request, server *fdov1.FDOOnboardingServer) (*routev1.Route, error) {
+	route := &routev1.Route{}
+	err := r.GetClient().Get(ctx, types.NamespacedName{Name: server.Name, Namespace: server.Namespace}, route)
+	if err == nil {
+		return route, nil
+	}
+	if !errors.IsNotFound(err) {
+		log.Error(err, "Failed to get Route")
+		return nil, err
+	}
+	route = r.createRouteSpec(server)
+	log.Info("Creating a new Route", "Route.Namespace", server.Namespace, "Route.Name", server.Name)
+	err = r.GetClient().Create(ctx, route)
+	if err != nil {
+		log.Error(err, "Failed to create new Route", "Route.Namespace", server.Namespace, "Route.Name", server.Name)
+		return nil, err
+	}
+	return route, nil
+}
+
+func (r *FDOOnboardingServerReconciler) getOrCreateOrUpdateOwnerOnboardingConfigMap(log logr.Logger, ctx context.Context, req ctrl.Request, server *fdov1.FDOOnboardingServer, route *routev1.Route) (*corev1.ConfigMap, error) {
+	confMap := &corev1.ConfigMap{}
+	objName := ownerOnboardingConfigMap
+	err := r.GetClient().Get(ctx, types.NamespacedName{Name: objName, Namespace: server.Namespace}, confMap)
+	if err == nil {
+		return confMap, nil
+	}
+	if !errors.IsNotFound(err) {
+		log.Error(err, "Failed to get ConfigMap")
+		return nil, err
+	}
+	ownerConf, err := r.generateOwnerOnboardingConfig(server, route)
+	if err != nil {
+		return nil, err
+	}
+	confMap = r.createOwnerOnboardingConfigMap(ownerConf, server)
+	log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", server.Namespace, "ConfigMap.Name", objName)
+	err = r.GetClient().Create(ctx, confMap)
+	if err != nil {
+		log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", server.Namespace, "ConfigMap.Name", objName)
+		return nil, err
+	}
+	return confMap, nil
+}
+
+func (r *FDOOnboardingServerReconciler) getOrCreateOrUpdateServiceInfoAPIConfigMap(log logr.Logger, ctx context.Context, req ctrl.Request, server *fdov1.FDOOnboardingServer) (*corev1.ConfigMap, error) {
+	confMap := &corev1.ConfigMap{}
+	objName := serviceInfoAPIConfigMap
+	err := r.GetClient().Get(ctx, types.NamespacedName{Name: objName, Namespace: server.Namespace}, confMap)
+	if err == nil {
+		return confMap, nil
+	}
+	if !errors.IsNotFound(err) {
+		log.Error(err, "Failed to get ConfigMap")
+		return nil, err
+	}
 	serviceInfoConf, err := r.generateServiceInfoAPIConfig(server)
 	if err != nil {
-		return r.ManageError(ctx, server, err)
+		return nil, err
 	}
-
-	log.Info(serviceInfoConf)
-
-	return r.ManageSuccess(ctx, server)
+	confMap = r.createServiceInfoAPIConfigMap(serviceInfoConf, server)
+	log.Info("Creating a new ConfigMap", "ConfigMap.Namespace", server.Namespace, "ConfigMap.Name", objName)
+	err = r.GetClient().Create(ctx, confMap)
+	if err != nil {
+		log.Error(err, "Failed to create new ConfigMap", "ConfigMap.Namespace", server.Namespace, "ConfigMap.Name", objName)
+		return nil, err
+	}
+	return confMap, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.
@@ -127,9 +260,9 @@ func (r *FDOOnboardingServerReconciler) SetupWithManager(mgr ctrl.Manager) error
 		Complete(r)
 }
 
-func (r *FDOOnboardingServerReconciler) generateOwnerOnboardingConfig(fdoServer *fdov1.FDOOnboardingServer) (string, error) {
+func (r *FDOOnboardingServerReconciler) generateOwnerOnboardingConfig(fdoServer *fdov1.FDOOnboardingServer, route *routev1.Route) (string, error) {
 	config := OwnerOnboardingServerConfig{}
-	if err := config.setValues(fdoServer); err != nil {
+	if err := config.setValues(fdoServer, route); err != nil {
 		return "", err
 	}
 
@@ -155,7 +288,7 @@ func (r *FDOOnboardingServerReconciler) generateServiceInfoAPIConfig(fdoServer *
 
 func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1.FDOOnboardingServer) *appsv1.Deployment {
 	optional := false
-	labels := getLabels(onboarding)
+	labels := getLabels(OwnerOnboardingServiceType)
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      server.Name,
@@ -229,7 +362,7 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1.FDOOn
 							VolumeSource: corev1.VolumeSource{
 								ConfigMap: &corev1.ConfigMapVolumeSource{
 									LocalObjectReference: corev1.LocalObjectReference{
-										Name: "fdo-owner-onboarding-config",
+										Name: ownerOnboardingConfigMap,
 									},
 								},
 							},
@@ -284,7 +417,7 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1.FDOOn
 							VolumeSource: corev1.VolumeSource{
 								ConfigMap: &corev1.ConfigMapVolumeSource{
 									LocalObjectReference: corev1.LocalObjectReference{
-										Name: "fdo-serviceinfo-api-config",
+										Name: serviceInfoAPIConfigMap,
 									},
 								},
 							},
@@ -293,7 +426,7 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1.FDOOn
 							Name: "ownership-vouchers",
 							VolumeSource: corev1.VolumeSource{
 								PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-									ClaimName: "fdo-ownership-vouchers-pvc",
+									ClaimName: ownershipVouchersPVC,
 								},
 							},
 						},
@@ -307,13 +440,15 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1.FDOOn
 }
 
 func (r *FDOOnboardingServerReconciler) createServiceSpec(server *fdov1.FDOOnboardingServer) *corev1.Service {
+	labels := getLabels(OwnerOnboardingServiceType)
 	svc := &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      server.Name,
 			Namespace: server.Namespace,
+			Labels:    labels,
 		},
 		Spec: corev1.ServiceSpec{
-			Selector: getLabels(onboarding),
+			Selector: labels,
 			Ports: []corev1.ServicePort{
 				{
 					Protocol:   "TCP",
@@ -327,6 +462,57 @@ func (r *FDOOnboardingServerReconciler) createServiceSpec(server *fdov1.FDOOnboa
 	return svc
 }
 
-func getLabels(svc serviceType) map[string]string {
-	return map[string]string{"app": "fdo", "service": string(svc)}
+func (r *FDOOnboardingServerReconciler) createRouteSpec(server *fdov1.FDOOnboardingServer) *routev1.Route {
+	labels := getLabels(OwnerOnboardingServiceType)
+	route := &routev1.Route{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      server.Name,
+			Namespace: server.Namespace,
+			Labels:    labels,
+		},
+		Spec: routev1.RouteSpec{
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: server.Name,
+			},
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.FromInt(8081),
+			},
+			WildcardPolicy: routev1.WildcardPolicyNone,
+		},
+	}
+	ctrl.SetControllerReference(server, route, r.GetScheme())
+	return route
+}
+
+func (r *FDOOnboardingServerReconciler) createOwnerOnboardingConfigMap(config string, server *fdov1.FDOOnboardingServer) *corev1.ConfigMap {
+	labels := getLabels(OwnerOnboardingServiceType)
+	confMap := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      ownerOnboardingConfigMap,
+			Namespace: server.Namespace,
+			Labels:    labels,
+		},
+		Data: map[string]string{"owner-onboarding-server.yml": config},
+	}
+	ctrl.SetControllerReference(server, confMap, r.GetScheme())
+	return confMap
+}
+
+func (r *FDOOnboardingServerReconciler) createServiceInfoAPIConfigMap(config string, server *fdov1.FDOOnboardingServer) *corev1.ConfigMap {
+	labels := getLabels(OwnerOnboardingServiceType)
+	confMap := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      serviceInfoAPIConfigMap,
+			Namespace: server.Namespace,
+			Labels:    labels,
+		},
+		Data: map[string]string{"serviceinfo-api-server.yml": config},
+	}
+	ctrl.SetControllerReference(server, confMap, r.GetScheme())
+	return confMap
+}
+
+func getLabels(svc FDOServiceType) map[string]string {
+	return map[string]string{"app": "fdo", "fdo-service": string(svc)}
 }

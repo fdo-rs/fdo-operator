@@ -30,12 +30,15 @@ type FDOOnboardingServerSpec struct {
 
 	// Desired number of replicas
 	// +kubebuilder:validation:Minimum=0
+	// +kubebuilder:default=1
 	Replicas int32 `json:"replicas"`
 
 	// Owner-onboarding server container image
+	// +kubebuilder:default="quay.io/vemporop/fdo-owner-onboarding-server:1.0"
 	OwnerOnboardingImage string `json:"ownerOnboardingImage,omitempty"`
 
 	// ServiceInfo API server container image
+	// +kubebuilder:default="quay.io/vemporop/fdo-serviceinfo-api-server:1.0"
 	ServiceInfoImage string `json:"serviceInfoImage,omitempty"`
 
 	// Owner addresses to report to a rendezvous server
@@ -56,7 +59,7 @@ type OwnerAddress struct {
 	Port uint16 `json:"port"`
 
 	// Addresses defines possible addresses for reaching the ownership-onboarding server by a device
-	Addresses []Address `json:"addresses,omitempty"`
+	Addresses []Address `json:"addresses"`
 }
 
 // Address defines a host address represented either by a DNS name or an IP address
