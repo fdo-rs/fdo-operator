@@ -60,41 +60,9 @@ type OwnerAddress struct {
 	Addresses []Address `yaml:"addresses"`
 }
 
-func NewOwnerAddress(o *fdov1.OwnerAddress) (*OwnerAddress, error) {
-	if len(o.Addresses) == 0 {
-		return nil, fmt.Errorf("at lease one DNS name or IP address is required for owner address")
-	}
-	ownAddr := &OwnerAddress{
-		Port:      o.Port,
-		Transport: o.Transport,
-		Addresses: make([]Address, len(o.Addresses)),
-	}
-	for i, a := range o.Addresses {
-		newAddr, err := NewAddress(&a)
-		if err != nil {
-			return nil, err
-		}
-		ownAddr.Addresses[i] = *newAddr
-	}
-	return ownAddr, nil
-}
-
 type Address struct {
 	DNSName   string `yaml:"dns_name,omitempty"`
 	IPAddress string `yaml:"ip_address,omitempty"`
-}
-
-func NewAddress(o *fdov1.Address) (*Address, error) {
-	if o.DNSName != "" && o.IPAddress != "" {
-		return nil, fmt.Errorf("cannot use both DNS and IP address for address")
-	}
-	if o.DNSName == "" && o.IPAddress == "" {
-		return nil, fmt.Errorf("either a DNS or IP address is required for rendezvous server")
-	}
-	return &Address{
-		DNSName:   o.DNSName,
-		IPAddress: o.IPAddress,
-	}, nil
 }
 
 type ServiceInfoAPIAuthentication struct {
@@ -121,30 +89,18 @@ func (c *OwnerOnboardingServerConfig) setValues(server *fdov1.FDOOnboardingServe
 	c.OwnerPrivateKeyPath = "/etc/fdo/keys/owner_key.der"
 	c.OwnerPublicKeyPath = "/etc/fdo/keys/owner_cert.pem"
 
-	if len(server.Spec.OwnerAddresses) == 0 {
-		if route.Spec.Host == "" {
-			return fmt.Errorf("owner addresses must contain at least one value")
-		}
-		c.OwnerAddresses = []OwnerAddress{
-			{
-				Transport: "http",
-				Port:      80,
-				Addresses: []Address{
-					{
-						DNSName: route.Spec.Host,
-					},
+	// For now use a highly opinionated config that points to
+	// a generated OpenShift route and uses HTTP transport
+	c.OwnerAddresses = []OwnerAddress{
+		{
+			Transport: "http",
+			Port:      80,
+			Addresses: []Address{
+				{
+					DNSName: route.Spec.Host,
 				},
 			},
-		}
-	} else {
-		c.OwnerAddresses = make([]OwnerAddress, len(server.Spec.OwnerAddresses))
-		for i, a := range server.Spec.OwnerAddresses {
-			ownAddr, err := NewOwnerAddress(&a)
-			if err != nil {
-				return err
-			}
-			c.OwnerAddresses[i] = *ownAddr
-		}
+		},
 	}
 	c.ReportToRendezvousEndpoint = true
 	c.ServiceInfoAPIURL = "http://127.0.0.1:8083/device_info"

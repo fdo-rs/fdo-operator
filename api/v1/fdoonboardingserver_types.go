@@ -40,32 +40,6 @@ type FDOOnboardingServerSpec struct {
 	// ServiceInfo API server container image
 	// +kubebuilder:default="quay.io/vemporop/fdo-serviceinfo-api-server:1.0"
 	ServiceInfoImage string `json:"serviceInfoImage,omitempty"`
-
-	// Owner addresses to report to a rendezvous server
-	// +kubebuilder:valdation:MinItems=1
-	OwnerAddresses []OwnerAddress `json:"ownerAddresses,omitempty"`
-}
-
-// OwnerAddress defines an address and transport for contacting to the ownership-onboarding server
-type OwnerAddress struct {
-
-	// Transport
-	// +kubebuilder:validation:Enum=tcp;tls;http;coap;https;coaps
-	// +kubebuilder:default=http
-	Transport string `json:"transport"`
-
-	// Port for reaching the ownership-onboarding server
-	// +kubebuilder:default=80
-	Port uint16 `json:"port"`
-
-	// Addresses defines possible addresses for reaching the ownership-onboarding server by a device
-	Addresses []Address `json:"addresses"`
-}
-
-// Address defines a host address represented either by a DNS name or an IP address
-type Address struct {
-	DNSName   string `json:"dnsName,omitempty"`
-	IPAddress string `json:"ipAddress,omitempty"`
 }
 
 // FDOOnboardingServerStatus defines the observed state of FDOOnboardingServer
