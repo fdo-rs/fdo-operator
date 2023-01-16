@@ -158,6 +158,7 @@ func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboarding
 	c.Bind = "0.0.0.0:8083"
 	c.DeviceSpecificStoreDriver = NewDriver("/etc/fdo/device_specific_serviceinfo")
 	c.ServiceInfoAuthToken = ServiceInfoAuthToken
+	c.ServiceInfo = &ServiceInfo{}
 	// TODO: Add missing fields to the CRD, validate its service info and copy from it
 	return nil
 }
