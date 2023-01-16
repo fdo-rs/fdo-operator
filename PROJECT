@@ -15,8 +15,8 @@ resources:
   domain: redhat.com
   group: fdo
   kind: FDORendezvousServer
-  path: github.com/empovit/fdo-operators/api/v1
-  version: v1
+  path: github.com/empovit/fdo-operators/api/v1alpha1
+  version: v1alpha1
 - api:
     crdVersion: v1
     namespaced: true
@@ -24,8 +24,8 @@ resources:
   domain: redhat.com
   group: fdo
   kind: FDOOnboardingServer
-  path: github.com/empovit/fdo-operators/api/v1
-  version: v1
+  path: github.com/empovit/fdo-operators/api/v1alpha1
+  version: v1alpha1
 - api:
     crdVersion: v1
     namespaced: true
@@ -33,6 +33,6 @@ resources:
   domain: redhat.com
   group: fdo
   kind: FDOManufacturingServer
-  path: github.com/empovit/fdo-operators/api/v1
-  version: v1
+  path: github.com/empovit/fdo-operators/api/v1alpha1
+  version: v1alpha1
 version: "3"

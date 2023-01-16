@@ -19,7 +19,7 @@ package controllers
 import (
 	"fmt"
 
-	fdov1 "github.com/empovit/fdo-operators/api/v1"
+	fdov1alpha1 "github.com/empovit/fdo-operators/api/v1alpha1"
 	routev1 "github.com/openshift/api/route/v1"
 )
 
@@ -81,7 +81,7 @@ func NewServiceInfoAPIAuthentication(token string) *ServiceInfoAPIAuthentication
 	}
 }
 
-func (c *OwnerOnboardingServerConfig) setValues(server *fdov1.FDOOnboardingServer, route *routev1.Route) error {
+func (c *OwnerOnboardingServerConfig) setValues(server *fdov1alpha1.FDOOnboardingServer, route *routev1.Route) error {
 	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
 	c.OwnerShipVoucherStoreDriver = NewDriver("/etc/fdo/ownership_vouchers/")
 	c.Bind = "0.0.0.0:8081"
@@ -154,7 +154,7 @@ type ServiceInfoDiskEncryptionClevisBinding struct {
 	Config string `yaml:"config,omitempty"`
 }
 
-func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1.FDOOnboardingServer) error {
+func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboardingServer) error {
 	c.Bind = "0.0.0.0:8083"
 	c.DeviceSpecificStoreDriver = NewDriver("/etc/fdo/device_specific_serviceinfo")
 	c.ServiceInfoAuthToken = ServiceInfoAuthToken
@@ -203,7 +203,7 @@ type RendezvousInfo struct {
 	Protocol   string `yaml:"protocol,omitempty"`
 }
 
-func (c *ManufacturingServerConfig) setValues(server *fdov1.FDOManufacturingServer) error {
+func (c *ManufacturingServerConfig) setValues(server *fdov1alpha1.FDOManufacturingServer) error {
 	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
 	c.OwnerShipVoucherStoreDriver = NewDriver("/etc/fdo/ownership_vouchers/")
 	c.PublicKeyStoreDriver = NewDriver("/etc/fdo/keys/")
@@ -226,7 +226,7 @@ func (c *ManufacturingServerConfig) setValues(server *fdov1.FDOManufacturingServ
 	return nil
 }
 
-func (c *ManufacturingServerConfig) setRendezvousValues(r []fdov1.RendezvousServer) error {
+func (c *ManufacturingServerConfig) setRendezvousValues(r []fdov1alpha1.RendezvousServer) error {
 	rendezvousInfo := make([]RendezvousInfo, len(r))
 	if len(r) == 0 {
 		return fmt.Errorf("rendezvous servers must contain at least one value")
@@ -245,7 +245,7 @@ func (c *ManufacturingServerConfig) setRendezvousValues(r []fdov1.RendezvousServ
 	return nil
 }
 
-func (c *ManufacturingServerConfig) setProtocolsValues(p *fdov1.Protocols) error {
+func (c *ManufacturingServerConfig) setProtocolsValues(p *fdov1alpha1.Protocols) error {
 	if !p.PlainDI && p.DIUN == nil {
 		return fmt.Errorf("DIUN must be configured if plain DI is false")
 	}

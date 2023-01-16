@@ -15,7 +15,7 @@ spec:
     singular: fdorendezvousserver
   scope: Namespaced
   versions:
-  - name: v1
+  - name: v1alpha1
     schema:
       openAPIV3Schema:
         description: FDORendezvousServer is the Schema for the fdorendezvousservers

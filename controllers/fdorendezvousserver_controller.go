@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	fdov1 "github.com/empovit/fdo-operators/api/v1"
+	fdov1alpha1 "github.com/empovit/fdo-operators/api/v1alpha1"
 )
 
 // FDORendezvousServerReconciler reconciles a FDORendezvousServer object
@@ -57,6 +57,6 @@ func (r *FDORendezvousServerReconciler) Reconcile(ctx context.Context, req ctrl.
 // SetupWithManager sets up the controller with the Manager.
 func (r *FDORendezvousServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
-		For(&fdov1.FDORendezvousServer{}).
+		For(&fdov1alpha1.FDORendezvousServer{}).
 		Complete(r)
 }
