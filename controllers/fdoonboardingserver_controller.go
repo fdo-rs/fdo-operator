@@ -289,13 +289,14 @@ func (r *FDOOnboardingServerReconciler) generateServiceInfoAPIConfig(fdoServer *
 func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1alpha1.FDOOnboardingServer) *appsv1.Deployment {
 	optional := false
 	labels := getLabels(OwnerOnboardingServiceType)
+	replicas := int32(1)
 	dep := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      server.Name,
 			Namespace: server.Namespace,
 		},
 		Spec: appsv1.DeploymentSpec{
-			Replicas: &server.Spec.Replicas,
+			Replicas: &replicas,
 			Selector: &metav1.LabelSelector{
 				MatchLabels: labels,
 			},

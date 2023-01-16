@@ -40,18 +40,10 @@ spec:
                 default: quay.io/vemporop/fdo-owner-onboarding-server:1.0
                 description: Owner-onboarding server container image
                 type: string
-              replicas:
-                default: 1
-                description: Desired number of replicas
-                format: int32
-                minimum: 0
-                type: integer
               serviceInfoImage:
                 default: quay.io/vemporop/fdo-serviceinfo-api-server:1.0
                 description: ServiceInfo API server container image
                 type: string
-            required:
-            - replicas
             type: object
           status:
             description: FDOOnboardingServerStatus defines the observed state of FDOOnboardingServer

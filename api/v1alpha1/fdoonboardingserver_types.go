@@ -28,11 +28,6 @@ type FDOOnboardingServerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Desired number of replicas
-	// +kubebuilder:validation:Minimum=0
-	// +kubebuilder:default=1
-	Replicas int32 `json:"replicas"`
-
 	// Owner-onboarding server container image
 	// +kubebuilder:default="quay.io/vemporop/fdo-owner-onboarding-server:1.0"
 	OwnerOnboardingImage string `json:"ownerOnboardingImage,omitempty"`
