@@ -288,6 +288,7 @@ func (r *FDOOnboardingServerReconciler) generateServiceInfoAPIConfig(fdoServer *
 
 func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1alpha1.FDOOnboardingServer) *appsv1.Deployment {
 	optional := false
+	privileged := false
 	labels := getLabels(OwnerOnboardingServiceType)
 	replicas := int32(1)
 	dep := &appsv1.Deployment{
@@ -342,6 +343,14 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1alpha1
 									ReadOnly:  true,
 								},
 							},
+							SecurityContext: &corev1.SecurityContext{
+								AllowPrivilegeEscalation: &privileged,
+								Capabilities: &corev1.Capabilities{
+									Drop: []corev1.Capability{
+										"ALL",
+									},
+								},
+							},
 						}, {
 							Image: server.Spec.ServiceInfoImage,
 							Name:  "serviceinfo-api",
@@ -354,6 +363,14 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1alpha1
 									Name:      "serviceinfo-api-config",
 									MountPath: "/etc/fdo/serviceinfo-api-server.conf.d",
 									ReadOnly:  true,
+								},
+							},
+							SecurityContext: &corev1.SecurityContext{
+								AllowPrivilegeEscalation: &privileged,
+								Capabilities: &corev1.Capabilities{
+									Drop: []corev1.Capability{
+										"ALL",
+									},
 								},
 							},
 						}},
@@ -430,6 +447,12 @@ func (r *FDOOnboardingServerReconciler) createDeploymentSpec(server *fdov1alpha1
 									ClaimName: ownershipVouchersPVC,
 								},
 							},
+						},
+					},
+					SecurityContext: &corev1.PodSecurityContext{
+						RunAsNonRoot: &privileged,
+						SeccompProfile: &corev1.SeccompProfile{
+							Type: "RuntimeDefault",
 						},
 					},
 				},
