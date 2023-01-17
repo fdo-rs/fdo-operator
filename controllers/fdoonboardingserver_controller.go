@@ -127,10 +127,10 @@ func (r *FDOOnboardingServerReconciler) getOnboardingServer(log logr.Logger, ctx
 		return server, true, nil
 	}
 	if errors.IsNotFound(err) {
-		log.Info("FDOManufacturingServer resource not found. Ignoring since object must have been deleted")
+		log.Info("FDOOnboardingServer resource not found. Ignoring since object must have been deleted")
 		return nil, false, nil
 	}
-	log.Error(err, "Failed to get FDOManufacturingServer resource")
+	log.Error(err, "Failed to get FDOOnboardingServer resource")
 	return nil, false, err
 }
 
