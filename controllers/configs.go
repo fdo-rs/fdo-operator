@@ -159,8 +159,52 @@ func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboarding
 	c.DeviceSpecificStoreDriver = NewDriver("/etc/fdo/device_specific_serviceinfo")
 	c.ServiceInfoAuthToken = ServiceInfoAuthToken
 	c.ServiceInfo = &ServiceInfo{}
-	// TODO: Add missing fields to the CRD, validate its service info and copy from it
+	if server.Spec.ServiceInfo == nil {
+		return nil
+	}
+	if server.Spec.ServiceInfo.InitialUser != nil {
+		user := server.Spec.ServiceInfo.InitialUser
+		c.ServiceInfo.InitialUser = &ServiceInfoInitialUser{
+			Username: user.Username,
+			SSHKeys:  user.SSHKeys,
+		}
+	}
+	if server.Spec.ServiceInfo.Files != nil {
+		files := server.Spec.ServiceInfo.Files
+		c.ServiceInfo.Files = make([]ServiceInfoFile, len(files))
+		for i, f := range files {
+			c.ServiceInfo.Files[i] = ServiceInfoFile(f)
+		}
+	}
+	if server.Spec.ServiceInfo.Commands != nil {
+		commands := server.Spec.ServiceInfo.Commands
+		c.ServiceInfo.Commands = make([]ServiceInfoCommand, len(commands))
+		for i, cmd := range commands {
+			c.ServiceInfo.Commands[i] = ServiceInfoCommand(cmd)
+		}
+	}
+	if server.Spec.ServiceInfo.DiskEncryptionClevises != nil {
+		clevises := server.Spec.ServiceInfo.DiskEncryptionClevises
+		c.ServiceInfo.DiskEncryptionClevises = make([]ServiceInfoDiskEncryptionClevis, len(clevises))
+		for i, clv := range clevises {
+			c.ServiceInfo.DiskEncryptionClevises[i] = NewServiceInfoDiskEncryptionClevis(clv)
+		}
+	}
 	return nil
+}
+
+func NewServiceInfoDiskEncryptionClevis(cl fdov1alpha1.DiskEncryptionClevis) ServiceInfoDiskEncryptionClevis {
+	c := ServiceInfoDiskEncryptionClevis{
+		DiskLabel: cl.DiskLabel,
+		ReEncrypt: cl.ReEncrypt,
+	}
+	if cl.Binding != nil {
+		c.Binding = &ServiceInfoDiskEncryptionClevisBinding{
+			Pin:    cl.Binding.Pin,
+			Config: cl.Binding.Config,
+		}
+	}
+	return c
 }
 
 type ManufacturingServerConfig struct {

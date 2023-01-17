@@ -89,9 +89,9 @@ type File struct {
 type Command struct {
 	Command      string   `json:"command"`
 	Args         []string `json:"args"`
-	MayFail      bool     `json:"mayFail"`
-	ReturnStdOut bool     `json:"returnStdOut"`
-	ReturnStdErr bool     `json:"returnStdErr"`
+	MayFail      bool     `json:"mayFail,omitempty"`
+	ReturnStdOut bool     `json:"returnStdOut,omitempty"`
+	ReturnStdErr bool     `json:"returnStdErr,omitempty"`
 }
 
 type DiskEncryptionClevis struct {

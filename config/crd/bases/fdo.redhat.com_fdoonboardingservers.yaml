@@ -40,6 +40,76 @@ spec:
                 default: quay.io/vemporop/fdo-owner-onboarding-server:1.0
                 description: Owner-onboarding server container image
                 type: string
+              serviceInfo:
+                description: Service info device onboarding sequence
+                properties:
+                  commands:
+                    items:
+                      properties:
+                        args:
+                          items:
+                            type: string
+                          type: array
+                        command:
+                          type: string
+                        mayFail:
+                          type: boolean
+                        returnStdErr:
+                          type: boolean
+                        returnStdOut:
+                          type: boolean
+                      required:
+                      - args
+                      - command
+                      type: object
+                    type: array
+                  diskencryptionClevis:
+                    items:
+                      properties:
+                        binding:
+                          properties:
+                            config:
+                              type: string
+                            pin:
+                              type: string
+                          type: object
+                        diskLabel:
+                          type: string
+                        reencrypt:
+                          type: boolean
+                      required:
+                      - binding
+                      - diskLabel
+                      - reencrypt
+                      type: object
+                    type: array
+                  files:
+                    items:
+                      properties:
+                        path:
+                          type: string
+                        permissions:
+                          type: string
+                        sourcePath:
+                          type: string
+                      required:
+                      - path
+                      - sourcePath
+                      type: object
+                    type: array
+                  initialUser:
+                    properties:
+                      sshKeys:
+                        items:
+                          type: string
+                        type: array
+                      username:
+                        type: string
+                    required:
+                    - sshKeys
+                    - username
+                    type: object
+                type: object
               serviceInfoImage:
                 default: quay.io/vemporop/fdo-serviceinfo-api-server:1.0
                 description: ServiceInfo API server container image
