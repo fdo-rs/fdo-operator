@@ -28,14 +28,24 @@ type FDORendezvousServerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Foo is an example field of FDORendezvousServer. Edit fdorendezvousserver_types.go to remove/update
-	Foo string `json:"foo,omitempty"`
+	// Rendezvous server container image
+	// +kubebuilder:default="quay.io/vemporop/fdo-rendezvous-server:1.0"
+	Image string `json:"image,omitempty"`
 }
 
 // FDORendezvousServerStatus defines the observed state of FDORendezvousServer
 type FDORendezvousServerStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// Pods lists all pods running the rendezvous server
+	Pods []string `json:"pods,omitempty"`
+
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
 //+kubebuilder:object:root=true
@@ -48,6 +58,14 @@ type FDORendezvousServer struct {
 
 	Spec   FDORendezvousServerSpec   `json:"spec,omitempty"`
 	Status FDORendezvousServerStatus `json:"status,omitempty"`
+}
+
+func (m *FDORendezvousServer) GetConditions() []metav1.Condition {
+	return m.Status.Conditions
+}
+
+func (m *FDORendezvousServer) SetConditions(conditions []metav1.Condition) {
+	m.Status.Conditions = conditions
 }
 
 //+kubebuilder:object:root=true

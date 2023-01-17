@@ -19,17 +19,28 @@ package controllers
 import (
 	"context"
 
+	routev1 "github.com/openshift/api/route/v1"
+	"gopkg.in/yaml.v2"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
-	"sigs.k8s.io/controller-runtime/pkg/client"
-	"sigs.k8s.io/controller-runtime/pkg/log"
 
 	fdov1alpha1 "github.com/empovit/fdo-operators/api/v1alpha1"
+	util "github.com/redhat-cop/operator-utils/pkg/util"
+	appsv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	logf "sigs.k8s.io/controller-runtime/pkg/log"
+)
+
+const (
+	rendezvousConfigMap = "fdo-rendezvous-config"
+	rendezvousImage     = "quay.io/vemporop/fdo-rendezvous-server:1.0"
 )
 
 // FDORendezvousServerReconciler reconciles a FDORendezvousServer object
 type FDORendezvousServerReconciler struct {
-	client.Client
+	util.ReconcilerBase
 	Scheme *runtime.Scheme
 }
 
@@ -47,11 +58,177 @@ type FDORendezvousServerReconciler struct {
 // For more details, check Reconcile and its Result here:
 // - https://pkg.go.dev/sigs.k8s.io/controller-runtime@v0.12.1/pkg/reconcile
 func (r *FDORendezvousServerReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ctrl.Result, error) {
-	_ = log.FromContext(ctx)
-
-	// TODO(user): your logic here
+	log := logf.FromContext(ctx)
+	log.Info("")
+	log = logf.Log.WithName("fdorendezcousserver_controller").WithValues("Request.Namespace", req.Namespace, "Request.Name", req.Name)
+	log.Info("Reconciling FDO rendezvous server")
 
 	return ctrl.Result{}, nil
+}
+
+func (r *FDORendezvousServerReconciler) generateConfig(fdoServer *fdov1alpha1.FDORendezvousServer) (string, error) {
+	config := &RendezvousServerConfig{}
+	if err := config.setValues(fdoServer); err != nil {
+		return "", err
+	}
+
+	v, err := yaml.Marshal(&config)
+	if err != nil {
+		return "", err
+	}
+	return string(v), nil
+}
+
+func (r *FDORendezvousServerReconciler) createDeploymentSpec(server *fdov1alpha1.FDORendezvousServer) *appsv1.Deployment {
+	optional := false
+	privileged := false
+	labels := getLabels(RendezvousServiceType)
+	replicas := int32(1)
+	dep := &appsv1.Deployment{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      server.Name,
+			Namespace: server.Namespace,
+		},
+		Spec: appsv1.DeploymentSpec{
+			Replicas: &replicas,
+			Selector: &metav1.LabelSelector{
+				MatchLabels: labels,
+			},
+			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Labels: labels,
+				},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						{
+							Image: server.Spec.Image,
+							Name:  "rendezvous",
+							Ports: []corev1.ContainerPort{
+								{
+									ContainerPort: 8082,
+								}},
+							VolumeMounts: []corev1.VolumeMount{
+								{
+									Name:      "config",
+									MountPath: "/etc/fdo/rendezvous-server.conf.d",
+									ReadOnly:  true,
+								},
+								{
+									Name:      "manufacturer-cert",
+									MountPath: "/etc/fdo/keys/manufacturer_cert.pem",
+									SubPath:   "manufacturer_cert.pem",
+									ReadOnly:  true,
+								},
+							},
+							SecurityContext: &corev1.SecurityContext{
+								AllowPrivilegeEscalation: &privileged,
+								Capabilities: &corev1.Capabilities{
+									Drop: []corev1.Capability{
+										"ALL",
+									},
+								},
+							},
+						},
+					},
+					Volumes: []corev1.Volume{
+						{
+							Name: "config",
+							VolumeSource: corev1.VolumeSource{
+								ConfigMap: &corev1.ConfigMapVolumeSource{
+									LocalObjectReference: corev1.LocalObjectReference{
+										Name: rendezvousConfigMap,
+									},
+								},
+							},
+						},
+						{
+							Name: "manufacturer-cert",
+							VolumeSource: corev1.VolumeSource{
+								Secret: &corev1.SecretVolumeSource{
+									SecretName: "fdo-manufacturer-cert",
+									Items: []corev1.KeyToPath{
+										{
+											Key:  "manufacturer_cert.pem",
+											Path: "manufacturer_cert.pem",
+										},
+									},
+									Optional: &optional,
+								},
+							},
+						},
+					},
+					SecurityContext: &corev1.PodSecurityContext{
+						RunAsNonRoot: &privileged,
+						SeccompProfile: &corev1.SeccompProfile{
+							Type: "RuntimeDefault",
+						},
+					},
+				},
+			},
+		},
+	}
+	ctrl.SetControllerReference(server, dep, r.GetScheme())
+	return dep
+}
+
+func (r *FDORendezvousServerReconciler) createServiceSpec(server *fdov1alpha1.FDORendezvousServer) *corev1.Service {
+	labels := getLabels(RendezvousServiceType)
+	svc := &corev1.Service{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      server.Name,
+			Namespace: server.Namespace,
+			Labels:    labels,
+		},
+		Spec: corev1.ServiceSpec{
+			Selector: labels,
+			Ports: []corev1.ServicePort{
+				{
+					Protocol:   "TCP",
+					Port:       int32(8082),
+					TargetPort: intstr.FromInt(8082),
+				},
+			},
+		},
+	}
+	ctrl.SetControllerReference(server, svc, r.GetScheme())
+	return svc
+}
+
+func (r *FDORendezvousServerReconciler) createRouteSpec(server *fdov1alpha1.FDORendezvousServer) *routev1.Route {
+	labels := getLabels(RendezvousServiceType)
+	route := &routev1.Route{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      server.Name,
+			Namespace: server.Namespace,
+			Labels:    labels,
+		},
+		Spec: routev1.RouteSpec{
+			To: routev1.RouteTargetReference{
+				Kind: "Service",
+				Name: server.Name,
+			},
+			Port: &routev1.RoutePort{
+				TargetPort: intstr.FromInt(8082),
+			},
+			WildcardPolicy: routev1.WildcardPolicyNone,
+		},
+	}
+	ctrl.SetControllerReference(server, route, r.GetScheme())
+	return route
+}
+
+func (r *FDORendezvousServerReconciler) createConfigMap(config string, server *fdov1alpha1.FDORendezvousServer) *corev1.ConfigMap {
+	labels := getLabels(RendezvousServiceType)
+	confMap := &corev1.ConfigMap{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      serviceInfoAPIConfigMap,
+			Namespace: server.Namespace,
+			Labels:    labels,
+		},
+		Data: map[string]string{"rendezvous-server.yml": config},
+	}
+	ctrl.SetControllerReference(server, confMap, r.GetScheme())
+	return confMap
 }
 
 // SetupWithManager sets up the controller with the Manager.
