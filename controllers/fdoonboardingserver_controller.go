@@ -90,6 +90,8 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	// TODO: Fix ServiceInfoAPI config structure
 	// TODO: Create/update PVC or require from user?
 	// TODO: How to enforce the mandatory secrets?
+	// TODO: Mount a storage for files consumed by service-info
+	// TODO: Allow customizing the route hostname
 
 	server, ok, err := r.getOnboardingServer(log, ctx, req)
 	if !ok {
@@ -97,26 +99,27 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	}
 
 	r.setDefaultValues(server)
-	_, err = r.getOrCreateOrUpdateDeployment(log, ctx, req, server)
-	if err != nil {
+	var route *routev1.Route
+	if route, err = r.getOrCreateOrUpdateRoute(log, ctx, req, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
-	_, err = r.getOrCreateOrUpdateService(log, ctx, req, server)
-	if err != nil {
+
+	if _, err = r.getOrCreateOrUpdateOwnerOnboardingConfigMap(log, ctx, req, server, route); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
-	route, err := r.getOrCreateOrUpdateRoute(log, ctx, req, server)
-	if err != nil {
+
+	if _, err = r.getOrCreateOrUpdateServiceInfoAPIConfigMap(log, ctx, req, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
-	_, err = r.getOrCreateOrUpdateOwnerOnboardingConfigMap(log, ctx, req, server, route)
-	if err != nil {
+
+	if _, err = r.getOrCreateOrUpdateDeployment(log, ctx, req, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
-	_, err = r.getOrCreateOrUpdateServiceInfoAPIConfigMap(log, ctx, req, server)
-	if err != nil {
+
+	if _, err = r.getOrCreateOrUpdateService(log, ctx, req, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
+
 	return r.ManageSuccess(ctx, server)
 }
 
