@@ -72,8 +72,12 @@ func (r *FDORendezvousServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	}
 
 	// TODO: Reload pods whenever the key/cert secrets change
-	// TODO: Do we need to update e.g. a service if it can't be changed via the server CR?
+	// TODO: Do we need to trigger an update of e.g. a service if there's no possibility to change it via the server CR (none of the fields affect the service)?
 	// TODO: How can we deal with direct editing of the objects (ConfigMap, Route, Deployment)?
+	if _, err = r.createOrUpdateConfigMap(log, server); err != nil {
+		return r.ManageError(ctx, server, err)
+	}
+
 	if _, err = r.createOrUpdateDeployment(log, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
@@ -83,10 +87,6 @@ func (r *FDORendezvousServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	}
 
 	if _, err = r.createOrUpdateRoute(log, server); err != nil {
-		return r.ManageError(ctx, server, err)
-	}
-
-	if _, err = r.createOrUpdateConfigMap(log, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
 
