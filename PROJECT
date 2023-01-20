@@ -5,7 +5,7 @@ plugins:
   manifests.sdk.operatorframework.io/v2: {}
   scorecard.sdk.operatorframework.io/v2: {}
   sdk.x-openshift.io/v1: {}
-projectName: operators
+projectName: fdo-operator
 repo: github.com/empovit/fdo-operators
 resources:
 - api:

@@ -1,0 +1,64 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: ClusterServiceVersion
+metadata:
+  annotations:
+    alm-examples: '[]'
+    capabilities: Basic Install
+  name: fdo-operator.v0.0.0
+  namespace: placeholder
+spec:
+  apiservicedefinitions: {}
+  customresourcedefinitions:
+    owned:
+    - description: FDOManufacturingServer is the Schema for the fdomanufacturingservers
+        API
+      displayName: FDOManufacturing Server
+      kind: FDOManufacturingServer
+      name: fdomanufacturingservers.fdo.redhat.com
+      version: v1alpha1
+    - description: FDOOnboardingServer is the Schema for the fdoonboardingservers
+        API
+      displayName: FDOOnboarding Server
+      kind: FDOOnboardingServer
+      name: fdoonboardingservers.fdo.redhat.com
+      version: v1alpha1
+    - description: FDORendezvousServer is the Schema for the fdorendezvousservers
+        API
+      displayName: FDORendezvous Server
+      kind: FDORendezvousServer
+      name: fdorendezvousservers.fdo.redhat.com
+      version: v1alpha1
+  description: The FDO Operator allows deploying one or more FIDO Device Onboard (FDO)
+    servers - manufacturing, rendezvous, owner onboarding and service info API - based
+    on the Fedora IoT implementation of FDO.
+  displayName: FIDO Device Onboard (FDO) Operator
+  icon:
+  - base64data: ""
+    mediatype: ""
+  install:
+    spec:
+      deployments: null
+    strategy: ""
+  installModes:
+  - supported: false
+    type: OwnNamespace
+  - supported: false
+    type: SingleNamespace
+  - supported: false
+    type: MultiNamespace
+  - supported: true
+    type: AllNamespaces
+  keywords:
+  - fdo
+  - edge
+  links:
+  - name: Fdo Operator
+    url: https://fdo-operator.domain
+  maintainers:
+  - email: vemporop@redhat.com
+    name: Vitaliy Emporopulo
+  maturity: alpha
+  provider:
+    name: Red Hat
+    url: https://github.com/empovit/fdo-operators
+  version: 0.0.0
