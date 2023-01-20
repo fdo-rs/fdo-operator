@@ -36,6 +36,9 @@ type FDOManufacturingServerReconciler struct {
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdomanufacturingservers,verbs=get;list;watch;create;update;patch;delete
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdomanufacturingservers/status,verbs=get;update;patch
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdomanufacturingservers/finalizers,verbs=update
+//+kubebuilder:rbac:groups=route.openshift.io,resources=routes,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=apps,resources=deployments,verbs=get;list;watch;create;update;patch;delete
+//+kubebuilder:rbac:groups=core,resources=services;configmaps,verbs=get;list;watch;create;update;patch;delete
 
 // Reconcile is part of the main kubernetes reconciliation loop which aims to
 // move the current state of the cluster closer to the desired state.
