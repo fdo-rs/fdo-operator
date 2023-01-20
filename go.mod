@@ -1,4 +1,4 @@
-module github.com/empovit/fdo-operators
+module github.com/empovit/fdo-operator
 
 go 1.18
 

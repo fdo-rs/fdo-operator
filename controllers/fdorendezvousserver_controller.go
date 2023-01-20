@@ -28,7 +28,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 
-	fdov1alpha1 "github.com/empovit/fdo-operators/api/v1alpha1"
+	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
 	util "github.com/redhat-cop/operator-utils/pkg/util"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"

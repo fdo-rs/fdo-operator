@@ -285,5 +285,5 @@ spec:
   maturity: alpha
   provider:
     name: Red Hat
-    url: https://github.com/empovit/fdo-operators
+    url: https://github.com/empovit/fdo-operator
   version: 0.0.1

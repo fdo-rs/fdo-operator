@@ -24,7 +24,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
 
-	fdov1alpha1 "github.com/empovit/fdo-operators/api/v1alpha1"
+	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
 )
 
 // FDOManufacturingServerReconciler reconciles a FDOManufacturingServer object

@@ -6,7 +6,7 @@ plugins:
   scorecard.sdk.operatorframework.io/v2: {}
   sdk.x-openshift.io/v1: {}
 projectName: fdo-operator
-repo: github.com/empovit/fdo-operators
+repo: github.com/empovit/fdo-operator
 resources:
 - api:
     crdVersion: v1
@@ -15,7 +15,7 @@ resources:
   domain: redhat.com
   group: fdo
   kind: FDORendezvousServer
-  path: github.com/empovit/fdo-operators/api/v1alpha1
+  path: github.com/empovit/fdo-operator/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -24,7 +24,7 @@ resources:
   domain: redhat.com
   group: fdo
   kind: FDOOnboardingServer
-  path: github.com/empovit/fdo-operators/api/v1alpha1
+  path: github.com/empovit/fdo-operator/api/v1alpha1
   version: v1alpha1
 - api:
     crdVersion: v1
@@ -33,6 +33,6 @@ resources:
   domain: redhat.com
   group: fdo
   kind: FDOManufacturingServer
-  path: github.com/empovit/fdo-operators/api/v1alpha1
+  path: github.com/empovit/fdo-operator/api/v1alpha1
   version: v1alpha1
 version: "3"

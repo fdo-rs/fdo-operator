@@ -30,7 +30,7 @@ import (
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	fdov1alpha1 "github.com/empovit/fdo-operators/api/v1alpha1"
+	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
 	//+kubebuilder:scaffold:imports
 )
 
