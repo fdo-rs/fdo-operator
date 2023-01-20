@@ -314,3 +314,18 @@ func (c *ManufacturingServerConfig) setProtocolsValues(p *fdov1alpha1.Protocols)
 	}
 	return nil
 }
+
+type RendezvousServerConfig struct {
+	StorageDriver               *Driver `yaml:"storage_driver"`
+	SessionStoreDriver          *Driver `yaml:"session_store_driver"`
+	Bind                        string  `yaml:"bind"`
+	TrustedManufacturerKeysPath string  `yaml:"trusted_manufacturer_keys_path"`
+}
+
+func (c *RendezvousServerConfig) setValues(s *fdov1alpha1.FDORendezvousServer) error {
+	c.StorageDriver = NewDriver("/etc/fdo/rendezvous_registered/")
+	c.SessionStoreDriver = NewDriver("/etc/fdo/rendezvous_sessions/")
+	c.TrustedManufacturerKeysPath = "/etc/fdo/keys/manufacturer_cert.pem"
+	c.Bind = "0.0.0.0:8082"
+	return nil
+}
