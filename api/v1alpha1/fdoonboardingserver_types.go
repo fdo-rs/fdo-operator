@@ -35,6 +35,9 @@ type FDOOnboardingServerSpec struct {
 	// ServiceInfo API server container image
 	// +kubebuilder:default="quay.io/vemporop/fdo-serviceinfo-api-server:1.0"
 	ServiceInfoImage string `json:"serviceInfoImage,omitempty"`
+
+	// Service info device onboarding sequence
+	ServiceInfo *ServiceInfo `json:"serviceInfo,omitempty"`
 }
 
 // FDOOnboardingServerStatus defines the observed state of FDOOnboardingServer
@@ -62,6 +65,44 @@ type FDOOnboardingServer struct {
 
 	Spec   FDOOnboardingServerSpec   `json:"spec,omitempty"`
 	Status FDOOnboardingServerStatus `json:"status,omitempty"`
+}
+
+// ServiceInfo defines a custom device onboarding sequence run through service info API
+type ServiceInfo struct {
+	InitialUser            *InitialUser           `json:"initialUser,omitempty"`
+	Files                  []File                 `json:"files,omitempty"`
+	Commands               []Command              `json:"commands,omitempty"`
+	DiskEncryptionClevises []DiskEncryptionClevis `json:"diskencryptionClevis,omitempty"`
+}
+
+type InitialUser struct {
+	Username string   `json:"username"`
+	SSHKeys  []string `json:"sshKeys"`
+}
+
+type File struct {
+	Path        string `json:"path"`
+	Permissions string `json:"permissions,omitempty"`
+	SourcePath  string `json:"sourcePath"`
+}
+
+type Command struct {
+	Command      string   `json:"command"`
+	Args         []string `json:"args"`
+	MayFail      bool     `json:"mayFail,omitempty"`
+	ReturnStdOut bool     `json:"returnStdOut,omitempty"`
+	ReturnStdErr bool     `json:"returnStdErr,omitempty"`
+}
+
+type DiskEncryptionClevis struct {
+	DiskLabel string                                  `json:"diskLabel"`
+	Binding   *ServiceInfoDiskEncryptionClevisBinding `json:"binding"`
+	ReEncrypt bool                                    `json:"reencrypt"`
+}
+
+type ServiceInfoDiskEncryptionClevisBinding struct {
+	Pin    string `json:"pin,omitempty"`
+	Config string `json:"config,omitempty"`
 }
 
 func (m *FDOOnboardingServer) GetConditions() []metav1.Condition {
