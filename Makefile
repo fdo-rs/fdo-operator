@@ -38,6 +38,18 @@ BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 # BUNDLE_GEN_FLAGS are the flags passed to the operator-sdk generate bundle command
 BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 
+# ADMIN_CLI_IMG defines a local image for running FDO admin commands without installing FDO binaries
+ADMIN_CLI_IMG ?= fdo-admin-cli:latest
+
+# FDO_CERT_ORG defines the org of test FDO certificates
+FDO_CERT_ORG ?= Example.com
+
+# FDO_CERT_COUNTRY defines the country of test FDO certificates
+FDO_CERT_COUNTRY ?= US
+
+# FDO_KEYS_DIR defines a local directory for storing generated FDO keys and certificates
+FDO_KEYS_DIR ?= "$(PWD)/keys"
+
 # USE_IMAGE_DIGESTS defines if images are resolved via tags or digests
 # You can enable this value if you would like to use SHA Based Digests
 # To enable set flag to true
@@ -234,3 +246,26 @@ catalog-build: opm ## Build a catalog image.
 .PHONY: catalog-push
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
+
+.PHONY: fdo-admin-img
+fdo-admin-img: ## Build an FDO admin CLI container image
+	docker build -f fdo-admin-cli.Dockerfile -t ${ADMIN_CLI_IMG} .
+
+.PHONY: keys-gen
+keys-gen: fdo-admin-img ## Generate FDO keys and certificates
+	mkdir -p "${FDO_KEYS_DIR}"
+	for subj in diun manufacturer device-ca owner; \
+	do \
+		docker run --rm -d -v "${FDO_KEYS_DIR}":/etc/fdo/keys:rw "${ADMIN_CLI_IMG}" \
+			generate-key-and-cert --organization "${FDO_CERT_ORG}" --country "${FDO_CERT_COUNTRY}" --destination-dir /etc/fdo/keys $${subj}; \
+	done
+
+.PHONY: keys-push
+keys-push:
+	for subj in diun manufacturer device-ca owner; \
+	do \
+		file="${FDO_KEYS_DIR}"/$$(echo $${subj} | awk '{ gsub("-", "_" ,$$1); print $$1 }') && \
+		oc create secret generic "fdo-$${subj}-cert" --from-file="$${file}_cert.pem" && \
+		oc create secret generic "fdo-$${subj}-key" --from-file="$${file}_key.der"; \
+	done
+

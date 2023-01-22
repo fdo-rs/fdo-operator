@@ -1,66 +1,28 @@
-## Development with CodeReady Containers (СRC)
-
-* Server hostnames in the configuration assume a CRC cluster, e.g. `fdo-rendezvous.apps-crc.testing`
-* Using a `hostPath` volume for ownership vouchers
-* Without [additional setup](#connecting-to-crc-cluster), the cluster is reachable only from the local machine
-
-Challenges to address:
-
-* ServiceInfo configuration - initial user, commands, files, encryption, etc.
-* ServiceInfo API access token in configuration
-
 ## Setting Up
 
 1. Generate keys and certificates
 
    ```sh
-   ansible-playbook keys.yml
+   make keys-gen
    ```
 
-2. Create secrets in `fdo-operator`:
+2. Create secrets in the namespace where the FDO servers will be deployed:
 
    ```sh
-   ./secrets.sh
+   make keys-push
    ```
 
-If using a local registry for FDO container images:
+3. Create the following persistent volume claims in the namespace where the FDO servers will be deployed:
 
-1. Build images and publish them to a local registry
-
-   ```sh
-   ansible-playbook registry.yml
-   ```
-
-2. Add the registry to the list of insecure registries in the cluster
-
-   ```sh
-   oc edit image.config.openshift.io/cluster
-   ```
-
-   and insert an entry for your host, e.g.
-
-   ```yaml
-   spec:
-    ...
-    registrySources:
-        insecureRegistries:
-        - 192.168.130.1:5000
-   ```
-
-3. Update the registry in the image spec of the pods, e.g. in [manifests/manufacturing.yml](manifests/manufacturing.yml):
-
-   ```yaml
-   spec:
-     containers:
-     - name: fdo-manufacturing-server
-       image: 192.168.130.1:5000/fdo-manufacturing-server:latest
-   ```
+   * fdo-ownership-vouchers-pvc
+   * fdo-serviceinfo-files-pvc
 
 ## Testing Device Initialization
 
 1. Build an `fdo-manufacturing-client` (`fdo-init`) container image:
 
    ```sh
+   cd containers
    podman build -t fdo-init-client:latest -f Containerfile.manufacturing-client
    ```
 
