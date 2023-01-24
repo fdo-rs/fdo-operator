@@ -244,8 +244,8 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 								SecretName: "fdo-diun-key",
 								Items: []corev1.KeyToPath{
 									{
-										Key:  "diun_key.pem",
-										Path: "diun_key.pem",
+										Key:  "diun_key.der",
+										Path: "diun_key.der",
 									},
 								},
 								Optional: &optional,
@@ -274,8 +274,8 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 								SecretName: "fdo-manufacturer-key",
 								Items: []corev1.KeyToPath{
 									{
-										Key:  "manufacturer_key.pem",
-										Path: "manufacturer_key.pem",
+										Key:  "manufacturer_key.der",
+										Path: "manufacturer_key.der",
 									},
 								},
 								Optional: &optional,
