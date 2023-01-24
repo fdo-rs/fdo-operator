@@ -57,7 +57,7 @@ type FDOManufacturingServerSpec struct {
 	Protocols *Protocols `json:"protocols"`
 }
 
-//RendezvousServer defines an entry of rendezvous server configuration
+// RendezvousServer defines an entry of rendezvous server configuration
 // TODO: Implement full configuration parameters of the reference implementation
 type RendezvousServer struct {
 
