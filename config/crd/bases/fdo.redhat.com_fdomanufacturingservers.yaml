@@ -51,7 +51,6 @@ spec:
                 - "OFF"
                 type: string
               protocols:
-                description: 'TODO:'
                 properties:
                   diun:
                     properties:
@@ -80,20 +79,19 @@ spec:
               rendezvousServers:
                 description: List of rendezvous servers
                 items:
-                  description: 'RendezvousServer defines an entry of rendezvous server
-                    configuration TODO: Implement full configuration parameters of
-                    the reference implementation'
+                  description: RendezvousServer defines an entry of rendezvous server
+                    configuration
                   properties:
                     devicePort:
                       description: Rendezvous port for device connections
                       type: integer
                     dns:
-                      description: 'Hostname of a rendezvous server, must select either
-                        a hostname or an IP address TODO: Add validation'
+                      description: Hostname of a rendezvous server, must select either
+                        a hostname or an IP address
                       type: string
                     ipAddress:
-                      description: 'IP address of a rendezvous server, must select
-                        either an IP address or a hostname TODO: Add validation'
+                      description: IP address of a rendezvous server, must select
+                        either an IP address or a hostname
                       type: string
                     ownerPort:
                       description: Rendezvous port for owner connections

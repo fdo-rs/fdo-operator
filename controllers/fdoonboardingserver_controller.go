@@ -79,6 +79,7 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	log = logf.Log.WithName("fdoonboardingserver_controller").WithValues("Request.Namespace", req.Namespace, "Request.Name", req.Name)
 	log.Info("Reconciling FDO onboarding server")
 
+	// TODO:
 	// 1. Create/update deployment
 	//	  a. Ensure the deployment size is the same as the spec
 	// 	  b. Update the owner-onboarding image
@@ -90,12 +91,6 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	// 3. Create/update onboarding route
 	// 4. Create/update owner-onboarding config map
 	// 5. Create/update serviceinfo-api config map
-
-	// TODO: Fix ServiceInfoAPI config structure
-	// TODO: Create/update PVC or require from user?
-	// TODO: How to enforce the mandatory secrets?
-	// TODO: Mount a storage for files consumed by service-info
-	// TODO: Allow customizing the route hostname
 
 	server, ok, err := r.getOnboardingServer(log, ctx, req)
 	if !ok {
@@ -126,6 +121,17 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	}
 
 	return r.ManageSuccess(ctx, server)
+}
+
+// SetupWithManager sets up the controller with the Manager.
+func (r *FDOOnboardingServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&fdov1alpha1.FDOOnboardingServer{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.ConfigMap{}).
+		Owns(&corev1.Service{}).
+		Owns(&routev1.Route{}).
+		Complete(r)
 }
 
 func (r *FDOOnboardingServerReconciler) getOnboardingServer(log logr.Logger, ctx context.Context, req ctrl.Request) (*fdov1alpha1.FDOOnboardingServer, bool, error) {
@@ -435,13 +441,6 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateServiceInfoAPIConfigMap(lo
 		log.Info("ConfigMap successfully reconciled for serviceinfo-api", "operation", op)
 		return configMap, nil
 	}
-}
-
-// SetupWithManager sets up the controller with the Manager.
-func (r *FDOOnboardingServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&fdov1alpha1.FDOOnboardingServer{}).
-		Complete(r)
 }
 
 func (r *FDOOnboardingServerReconciler) generateOwnerOnboardingConfig(fdoServer *fdov1alpha1.FDOOnboardingServer, route *routev1.Route) (string, error) {

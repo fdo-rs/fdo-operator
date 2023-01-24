@@ -1,9 +1,15 @@
 ## Development TODO
 
-* Implement container resources
-* Implement number of replicas
-* Allow custom hostnames in routes
-* Allow setting FDO log level (inside containers)
+* Implement the manufacturing server reconsiler.
+* Implement unit tests.
+* Add field validations, Optional/Requires, default values and documentation.
+* Should we create/update PVCs or require from user?
+* How can we enforce the mandatory secrets?
+* Allow customizing the route hostname
+* How do we reload pods whenever a key/cert secret changes?
+* Implement populating of the Status (esp. Pods)
+* Implement admission webhooks
+* Implement additional services info
 
 ## Setting Up
 

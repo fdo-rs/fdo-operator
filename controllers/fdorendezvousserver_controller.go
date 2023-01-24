@@ -73,9 +73,6 @@ func (r *FDORendezvousServerReconciler) Reconcile(ctx context.Context, req ctrl.
 		return ctrl.Result{}, err
 	}
 
-	// TODO: Reload pods whenever the key/cert secrets change
-	// TODO: Do we need to trigger an update of e.g. a service if there's no possibility to change it via the server CR (none of the fields affect the service)?
-	// TODO: How can we deal with direct editing of the objects (ConfigMap, Route, Deployment)?
 	if _, err = r.createOrUpdateConfigMap(log, server); err != nil {
 		return r.ManageError(ctx, server, err)
 	}
@@ -93,6 +90,17 @@ func (r *FDORendezvousServerReconciler) Reconcile(ctx context.Context, req ctrl.
 	}
 
 	return r.ManageSuccess(ctx, server)
+}
+
+// SetupWithManager sets up the controller with the Manager.
+func (r *FDORendezvousServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
+	return ctrl.NewControllerManagedBy(mgr).
+		For(&fdov1alpha1.FDORendezvousServer{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.ConfigMap{}).
+		Owns(&corev1.Service{}).
+		Owns(&routev1.Route{}).
+		Complete(r)
 }
 
 func (r *FDORendezvousServerReconciler) getRendezvousServer(log logr.Logger, ctx context.Context, req ctrl.Request) (*fdov1alpha1.FDORendezvousServer, bool, error) {
@@ -287,11 +295,4 @@ func (r *FDORendezvousServerReconciler) generateConfig(fdoServer *fdov1alpha1.FD
 		return "", err
 	}
 	return string(v), nil
-}
-
-// SetupWithManager sets up the controller with the Manager.
-func (r *FDORendezvousServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
-	return ctrl.NewControllerManagedBy(mgr).
-		For(&fdov1alpha1.FDORendezvousServer{}).
-		Complete(r)
 }

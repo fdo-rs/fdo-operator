@@ -423,6 +423,10 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateConfigMap(log logr.Logg
 func (r *FDOManufacturingServerReconciler) SetupWithManager(mgr ctrl.Manager) error {
 	return ctrl.NewControllerManagedBy(mgr).
 		For(&fdov1alpha1.FDOManufacturingServer{}).
+		Owns(&appsv1.Deployment{}).
+		Owns(&corev1.ConfigMap{}).
+		Owns(&corev1.Service{}).
+		Owns(&routev1.Route{}).
 		Complete(r)
 }
 
