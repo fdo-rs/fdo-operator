@@ -1,3 +1,10 @@
+## Development TODO
+
+* Implement container resources
+* Implement number of replicas
+* Allow custom hostnames in routes
+* Allow setting FDO log level (inside containers)
+
 ## Setting Up
 
 1. Generate keys and certificates

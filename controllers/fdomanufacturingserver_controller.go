@@ -223,7 +223,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 						},
 					},
 					{
-						Name: "duin-cert",
+						Name: "diun-cert",
 						VolumeSource: corev1.VolumeSource{
 							Secret: &corev1.SecretVolumeSource{
 								SecretName: "fdo-diun-cert",
@@ -238,7 +238,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 						},
 					},
 					{
-						Name: "duin-key",
+						Name: "diun-key",
 						VolumeSource: corev1.VolumeSource{
 							Secret: &corev1.SecretVolumeSource{
 								SecretName: "fdo-diun-key",

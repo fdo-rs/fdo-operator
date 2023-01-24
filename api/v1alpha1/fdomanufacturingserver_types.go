@@ -17,7 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -29,21 +28,8 @@ type FDOManufacturingServerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Desired number of replicas
-	// +kubebuilder:validation:Minimum=0
-	Replicas int32 `json:"replicas"`
-
 	// Container image
 	Image string `json:"image,omitempty"`
-
-	// Resources allocated for a manufacturing server pod (e.g. CPU)
-	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
-
-	// Name of the storage class to use for ownership vouchers persistent volumes
-	StorageClassName string `json:"storageClassName,omitempty"`
-
-	// Hostname of the route the server will be exposed through
-	RouteHost string `json:"routeHost,omitempty"`
 
 	// Log level: TRACE, DEBUG, INFO(default), WARN, ERROR or OFF
 	// +kubebuilder:validation:Enum=TRACE;DEBUG;INFO;WARN;ERROR;OFF
