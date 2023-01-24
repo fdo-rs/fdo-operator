@@ -334,8 +334,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 				},
 			},
 		}
-		ctrl.SetControllerReference(server, deploy, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, deploy, r.GetScheme())
 	})
 
 	if err != nil {
@@ -361,8 +360,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateService(log logr.Logger, s
 				},
 			},
 		}
-		ctrl.SetControllerReference(server, service, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, service, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "Service reconcile failed")
@@ -387,8 +385,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateRoute(log logr.Logger, ser
 			},
 			WildcardPolicy: routev1.WildcardPolicyNone,
 		}
-		ctrl.SetControllerReference(server, route, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, route, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "Route reconcile failed")
@@ -408,8 +405,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateOwnerOnboardingConfigMap(l
 			return err
 		}
 		configMap.Data = map[string]string{"owner-onboarding-server.yml": config}
-		ctrl.SetControllerReference(server, configMap, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, configMap, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "ConfiMap reconcile failed")
@@ -429,8 +425,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateServiceInfoAPIConfigMap(lo
 			return err
 		}
 		configMap.Data = map[string]string{"serviceinfo-api-server.yml": config}
-		ctrl.SetControllerReference(server, configMap, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, configMap, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "ConfiMap reconcile failed")

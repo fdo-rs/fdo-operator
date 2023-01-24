@@ -194,8 +194,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 				},
 			},
 		}
-		ctrl.SetControllerReference(server, deploy, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, deploy, r.GetScheme())
 	})
 
 	if err != nil {
@@ -221,8 +220,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateService(log logr.Logger, s
 				},
 			},
 		}
-		ctrl.SetControllerReference(server, service, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, service, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "Service reconcile failed")
@@ -247,8 +245,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateRoute(log logr.Logger, ser
 			},
 			WildcardPolicy: routev1.WildcardPolicyNone,
 		}
-		ctrl.SetControllerReference(server, route, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, route, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "Route reconcile failed")
@@ -268,8 +265,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateConfigMap(log logr.Logger,
 			return err
 		}
 		configMap.Data = map[string]string{"rendezvous-server.yml": config}
-		ctrl.SetControllerReference(server, configMap, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, configMap, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "ConfiMap reconcile failed")

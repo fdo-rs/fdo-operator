@@ -336,8 +336,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 				},
 			},
 		}
-		ctrl.SetControllerReference(server, deploy, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, deploy, r.GetScheme())
 	})
 
 	if err != nil {
@@ -363,8 +362,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateService(log logr.Logger
 				},
 			},
 		}
-		ctrl.SetControllerReference(server, service, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, service, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "Service reconcile failed")
@@ -389,8 +387,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateRoute(log logr.Logger, 
 			},
 			WildcardPolicy: routev1.WildcardPolicyNone,
 		}
-		ctrl.SetControllerReference(server, route, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, route, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "Route reconcile failed")
@@ -410,8 +407,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateConfigMap(log logr.Logg
 			return err
 		}
 		configMap.Data = map[string]string{"manufacturing-server.yml": config}
-		ctrl.SetControllerReference(server, configMap, r.GetScheme())
-		return nil
+		return ctrl.SetControllerReference(server, configMap, r.GetScheme())
 	})
 	if err != nil {
 		log.Error(err, "ConfiMap reconcile failed")
