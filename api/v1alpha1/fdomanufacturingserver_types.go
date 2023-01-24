@@ -57,7 +57,7 @@ type FDOManufacturingServerSpec struct {
 	Protocols *Protocols `json:"protocols"`
 }
 
-//RendezvousServer defines an entry of rendezvous server configuration
+// RendezvousServer defines an entry of rendezvous server configuration
 // TODO: Implement full configuration parameters of the reference implementation
 type RendezvousServer struct {
 
@@ -88,10 +88,12 @@ type Protocols struct {
 type DIUN struct {
 	// +kubebuilder:validation:Enum=SECP256R1;SECP384R1
 	KeyType string `json:"keyType"`
-	// +kubebuilder:validation:Enum=FileSystem;Tpm
-	// +kubebuilder:valdation:MinLength=1
-	AllowedKeyStorageTypes []string `json:"allowedKeyStorageTypes"`
+	// +kubebuilder:validation:MinItems=1
+	AllowedKeyStorageTypes []KeyStorageType `json:"allowedKeyStorageTypes"`
 }
+
+// +kubebuilder:validation:Enum=FileSystem;Tpm
+type KeyStorageType string
 
 // FDOManufacturingServerStatus defines the observed state of FDOManufacturingServer
 type FDOManufacturingServerStatus struct {

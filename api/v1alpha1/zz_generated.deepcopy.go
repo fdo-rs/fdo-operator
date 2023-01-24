@@ -52,7 +52,7 @@ func (in *DIUN) DeepCopyInto(out *DIUN) {
 	*out = *in
 	if in.AllowedKeyStorageTypes != nil {
 		in, out := &in.AllowedKeyStorageTypes, &out.AllowedKeyStorageTypes
-		*out = make([]string, len(*in))
+		*out = make([]KeyStorageType, len(*in))
 		copy(*out, *in)
 	}
 }

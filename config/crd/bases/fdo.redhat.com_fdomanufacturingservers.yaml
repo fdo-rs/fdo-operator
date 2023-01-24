@@ -56,11 +56,12 @@ spec:
                   diun:
                     properties:
                       allowedKeyStorageTypes:
-                        enum:
-                        - FileSystem
-                        - Tpm
                         items:
+                          enum:
+                          - FileSystem
+                          - Tpm
                           type: string
+                        minItems: 1
                         type: array
                       keyType:
                         enum:

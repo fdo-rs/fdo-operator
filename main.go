@@ -108,8 +108,8 @@ func main() {
 		os.Exit(1)
 	}
 	if err = (&controllers.FDOManufacturingServerReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
+		ReconcilerBase: util.NewReconcilerBase(mgr.GetClient(), mgr.GetScheme(), mgr.GetConfig(), mgr.GetEventRecorderFor("fdomanufacturingserver_controller"), mgr.GetAPIReader()),
+		Log:            ctrl.Log.WithName("controllers").WithName("FDOManufacturingServer"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "FDOManufacturingServer")
 		os.Exit(1)
