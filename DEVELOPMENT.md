@@ -1,13 +1,16 @@
 ## Development TODO
 
-* Implement the manufacturing server reconsiler.
-* Implement unit tests.
-* Add field validations, Optional/Requires, default values and documentation.
+* Update documentation
+* Let a user initialize service info files in the PV before the server starts
+* Implement unit tests
+* Add field validations, Optional/Requires, default values and documentation
+* Refactor the code for DRY
+* Allow customizing the route hostname
 * Should we create/update PVCs or require from user?
 * How can we enforce the mandatory secrets?
-* Allow customizing the route hostname
 * How do we reload pods whenever a key/cert secret changes?
-* Implement populating of the Status (esp. Pods)
+* Allow customizing secret names and PVC names
+* Implement populating of the Status (esp. Pods, if needed)
 * Implement admission webhooks
 * Implement additional services info
 
