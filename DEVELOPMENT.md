@@ -2,7 +2,8 @@
 
 * Expose destination namespace in the CRDs
 * Update documentation
-* Let a user initialize service info files in the PV before the server starts
+* Store service init files in a ConfigMaps/Secrets and let a user to provide a reference for each
+* Validate that a service info file exists before creating a deployment
 * Implement unit tests
 * Add field validations, Optional/Requires, default values and documentation
 * Refactor the code for DRY
