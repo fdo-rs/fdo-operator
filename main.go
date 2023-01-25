@@ -95,7 +95,7 @@ func main() {
 
 	if err = (&controllers.FDORendezvousServerReconciler{
 		ReconcilerBase: util.NewReconcilerBase(mgr.GetClient(), mgr.GetScheme(), mgr.GetConfig(), mgr.GetEventRecorderFor("fdorendezvousserver_controller"), mgr.GetAPIReader()),
-		Scheme:         mgr.GetScheme(),
+		Log:            ctrl.Log.WithName("controllers").WithName("FDORendezvousServer"),
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "FDORendezvousServer")
 		os.Exit(1)

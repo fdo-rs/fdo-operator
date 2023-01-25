@@ -85,7 +85,15 @@ type KeyStorageType string
 type FDOManufacturingServerStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// Pods lists all pods running the rendezvous server
 	Pods []string `json:"pods,omitempty"`
+
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
 //+kubebuilder:object:root=true
@@ -98,6 +106,14 @@ type FDOManufacturingServer struct {
 
 	Spec   FDOManufacturingServerSpec   `json:"spec,omitempty"`
 	Status FDOManufacturingServerStatus `json:"status,omitempty"`
+}
+
+func (m *FDOManufacturingServer) GetConditions() []metav1.Condition {
+	return m.Status.Conditions
+}
+
+func (m *FDOManufacturingServer) SetConditions(conditions []metav1.Condition) {
+	m.Status.Conditions = conditions
 }
 
 //+kubebuilder:object:root=true

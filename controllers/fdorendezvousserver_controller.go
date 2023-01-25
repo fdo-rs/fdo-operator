@@ -24,7 +24,6 @@ import (
 	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/intstr"
 	ctrl "sigs.k8s.io/controller-runtime"
 
@@ -44,7 +43,7 @@ const (
 // FDORendezvousServerReconciler reconciles a FDORendezvousServer object
 type FDORendezvousServerReconciler struct {
 	util.ReconcilerBase
-	Scheme *runtime.Scheme
+	Log logr.Logger
 }
 
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdorendezvousservers,verbs=get;list;watch;create;update;patch;delete
@@ -120,7 +119,8 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 			}
 		}
 		optional := false
-		privileged := false
+		privilegeEscalation := false
+		nonRoot := true
 		replicas := int32(1)
 		deploy.Spec.Replicas = &replicas
 		deploy.Spec.Template = corev1.PodTemplateSpec{
@@ -150,7 +150,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 							},
 						},
 						SecurityContext: &corev1.SecurityContext{
-							AllowPrivilegeEscalation: &privileged,
+							AllowPrivilegeEscalation: &privilegeEscalation,
 							Capabilities: &corev1.Capabilities{
 								Drop: []corev1.Capability{
 									"ALL",
@@ -187,7 +187,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 					},
 				},
 				SecurityContext: &corev1.PodSecurityContext{
-					RunAsNonRoot: &privileged,
+					RunAsNonRoot: &nonRoot,
 					SeccompProfile: &corev1.SeccompProfile{
 						Type: "RuntimeDefault",
 					},

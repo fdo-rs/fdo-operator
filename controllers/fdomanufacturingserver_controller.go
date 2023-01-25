@@ -124,7 +124,8 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 			}
 		}
 		optional := false
-		privileged := false
+		privilegeEscalation := false
+		nonRoot := true
 		labels := getLabels(ManufacturingServiceType)
 		replicas := int32(1)
 		deploy.Spec.Replicas = &replicas
@@ -195,7 +196,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 							},
 						},
 						SecurityContext: &corev1.SecurityContext{
-							AllowPrivilegeEscalation: &privileged,
+							AllowPrivilegeEscalation: &privilegeEscalation,
 							Capabilities: &corev1.Capabilities{
 								Drop: []corev1.Capability{
 									"ALL",
@@ -329,7 +330,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 					},
 				},
 				SecurityContext: &corev1.PodSecurityContext{
-					RunAsNonRoot: &privileged,
+					RunAsNonRoot: &nonRoot,
 					SeccompProfile: &corev1.SeccompProfile{
 						Type: "RuntimeDefault",
 					},

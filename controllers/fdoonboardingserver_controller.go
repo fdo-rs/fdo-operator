@@ -162,7 +162,8 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 			}
 		}
 		optional := false
-		privileged := false
+		privilegeEscalation := false
+		nonRoot := true
 		labels := getLabels(OwnerOnboardingServiceType)
 		replicas := int32(1)
 		deploy.Spec.Replicas = &replicas
@@ -209,7 +210,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 							},
 						},
 						SecurityContext: &corev1.SecurityContext{
-							AllowPrivilegeEscalation: &privileged,
+							AllowPrivilegeEscalation: &privilegeEscalation,
 							Capabilities: &corev1.Capabilities{
 								Drop: []corev1.Capability{
 									"ALL",
@@ -235,7 +236,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 							},
 						},
 						SecurityContext: &corev1.SecurityContext{
-							AllowPrivilegeEscalation: &privileged,
+							AllowPrivilegeEscalation: &privilegeEscalation,
 							Capabilities: &corev1.Capabilities{
 								Drop: []corev1.Capability{
 									"ALL",
@@ -327,7 +328,7 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 					},
 				},
 				SecurityContext: &corev1.PodSecurityContext{
-					RunAsNonRoot: &privileged,
+					RunAsNonRoot: &nonRoot,
 					SeccompProfile: &corev1.SeccompProfile{
 						Type: "RuntimeDefault",
 					},
@@ -408,10 +409,10 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateOwnerOnboardingConfigMap(l
 		return ctrl.SetControllerReference(server, configMap, r.GetScheme())
 	})
 	if err != nil {
-		log.Error(err, "ConfiMap reconcile failed")
+		log.Error(err, "ConfigMap reconcile failed for owner-onboarding")
 		return nil, err
 	} else {
-		log.Info("ConfigMap successfully reconciled", "operation", op)
+		log.Info("ConfigMap successfully reconciled for owner-onboarding", "operation", op)
 		return configMap, nil
 	}
 }
@@ -428,10 +429,10 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateServiceInfoAPIConfigMap(lo
 		return ctrl.SetControllerReference(server, configMap, r.GetScheme())
 	})
 	if err != nil {
-		log.Error(err, "ConfiMap reconcile failed")
+		log.Error(err, "ConfigMap reconcile failed for serviceinfo-api")
 		return nil, err
 	} else {
-		log.Info("ConfigMap successfully reconciled", "operation", op)
+		log.Info("ConfigMap successfully reconciled for serviceinfo-api", "operation", op)
 		return configMap, nil
 	}
 }
