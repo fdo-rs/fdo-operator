@@ -1,5 +1,6 @@
 ## Development TODO
 
+* Expose destination namespace in the CRDs
 * Update documentation
 * Let a user initialize service info files in the PV before the server starts
 * Implement unit tests
