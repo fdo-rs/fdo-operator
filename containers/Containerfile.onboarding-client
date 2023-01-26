@@ -1,7 +1,11 @@
 FROM quay.io/rockylinux/rockylinux:9
 
 ENV LOG_LEVEL=trace
+ENV DEVICE_CREDENTIAL=/root/creds/device_credentials
+ENV MANUFACTURING_INFO=/root/serial/test_product_serial
 
 RUN dnf update -y && dnf install -y fdo-client && dnf clean all
+
+RUN mkdir /root/creds && mkdir /root/serial && echo "TESTFDO" > /root/serial/test_product_serial
 
 ENTRYPOINT ["/usr/libexec/fdo/fdo-client-linuxapp"]
