@@ -196,7 +196,7 @@ ENVTEST ?= $(LOCALBIN)/setup-envtest
 GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
 
 ## Tool Versions
-KUSTOMIZE_VERSION ?= v3.8.7
+KUSTOMIZE_VERSION ?= v4.5.7
 CONTROLLER_TOOLS_VERSION ?= v0.10.0
 GOLANGCI_LINT_VERSION ?= v1.50.1
 
@@ -245,7 +245,7 @@ ifeq (,$(shell which opm 2>/dev/null))
 	set -e ;\
 	mkdir -p $(dir $(OPM)) ;\
 	OS=$(shell go env GOOS) && ARCH=$(shell go env GOARCH) && \
-	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.23.0/$${OS}-$${ARCH}-opm ;\
+	curl -sSLo $(OPM) https://github.com/operator-framework/operator-registry/releases/download/v1.26.2/$${OS}-$${ARCH}-opm ;\
 	chmod +x $(OPM) ;\
 	}
 else
