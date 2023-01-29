@@ -302,6 +302,11 @@ func (c *ManufacturingServerConfig) setProtocolsValues(p *fdov1alpha1.Protocols)
 		return nil
 	}
 
+	keyStorage := make([]string, len(p.DIUN.AllowedKeyStorageTypes))
+	for i, t := range p.DIUN.AllowedKeyStorageTypes {
+		keyStorage[i] = string(t)
+	}
+
 	c.Protocols = &Protocols{
 		PlainDI: p.PlainDI,
 		DIUN: &DIUN{
@@ -309,7 +314,7 @@ func (c *ManufacturingServerConfig) setProtocolsValues(p *fdov1alpha1.Protocols)
 			CertPath:               "/etc/fdo/keys/diun_cert.pem",
 			KeyType:                p.DIUN.KeyType,
 			MFGStringType:          "SerialNumber",
-			AllowedKeyStorageTypes: p.DIUN.AllowedKeyStorageTypes,
+			AllowedKeyStorageTypes: keyStorage,
 		},
 	}
 	return nil

@@ -17,7 +17,6 @@ limitations under the License.
 package v1alpha1
 
 import (
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -29,21 +28,8 @@ type FDOManufacturingServerSpec struct {
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
 
-	// Desired number of replicas
-	// +kubebuilder:validation:Minimum=0
-	Replicas int32 `json:"replicas"`
-
 	// Container image
 	Image string `json:"image,omitempty"`
-
-	// Resources allocated for a manufacturing server pod (e.g. CPU)
-	Resources *corev1.ResourceRequirements `json:"resources,omitempty"`
-
-	// Name of the storage class to use for ownership vouchers persistent volumes
-	StorageClassName string `json:"storageClassName,omitempty"`
-
-	// Hostname of the route the server will be exposed through
-	RouteHost string `json:"routeHost,omitempty"`
 
 	// Log level: TRACE, DEBUG, INFO(default), WARN, ERROR or OFF
 	// +kubebuilder:validation:Enum=TRACE;DEBUG;INFO;WARN;ERROR;OFF
@@ -57,7 +43,7 @@ type FDOManufacturingServerSpec struct {
 	Protocols *Protocols `json:"protocols"`
 }
 
-//RendezvousServer defines an entry of rendezvous server configuration
+// RendezvousServer defines an entry of rendezvous server configuration
 // TODO: Implement full configuration parameters of the reference implementation
 type RendezvousServer struct {
 
@@ -88,16 +74,26 @@ type Protocols struct {
 type DIUN struct {
 	// +kubebuilder:validation:Enum=SECP256R1;SECP384R1
 	KeyType string `json:"keyType"`
-	// +kubebuilder:validation:Enum=FileSystem;Tpm
-	// +kubebuilder:valdation:MinLength=1
-	AllowedKeyStorageTypes []string `json:"allowedKeyStorageTypes"`
+	// +kubebuilder:validation:MinItems=1
+	AllowedKeyStorageTypes []KeyStorageType `json:"allowedKeyStorageTypes"`
 }
+
+// +kubebuilder:validation:Enum=FileSystem;Tpm
+type KeyStorageType string
 
 // FDOManufacturingServerStatus defines the observed state of FDOManufacturingServer
 type FDOManufacturingServerStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+
+	// Pods lists all pods running the rendezvous server
 	Pods []string `json:"pods,omitempty"`
+
+	// +patchMergeKey=type
+	// +patchStrategy=merge
+	// +listType=map
+	// +listMapKey=type
+	Conditions []metav1.Condition `json:"conditions,omitempty" patchStrategy:"merge" patchMergeKey:"type"`
 }
 
 //+kubebuilder:object:root=true
@@ -110,6 +106,14 @@ type FDOManufacturingServer struct {
 
 	Spec   FDOManufacturingServerSpec   `json:"spec,omitempty"`
 	Status FDOManufacturingServerStatus `json:"status,omitempty"`
+}
+
+func (m *FDOManufacturingServer) GetConditions() []metav1.Condition {
+	return m.Status.Conditions
+}
+
+func (m *FDOManufacturingServer) SetConditions(conditions []metav1.Condition) {
+	m.Status.Conditions = conditions
 }
 
 //+kubebuilder:object:root=true
