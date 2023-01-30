@@ -2,8 +2,6 @@
 
 * Add field validations, Optional/Requires, default values and documentation
 * Modify the Owns to be more selective and watch only relevant resources
-* Let users annotate ConfigMaps/Secrets to be added as service-info files, regenerate the config automatically
-* Validate that a service info file exists inside the config map
 * Generate a new ConfigMap (with a random suffix) every time configuration changes to automatically trigger deployment updates
 * Implement unit tests
 * Update documentation
@@ -12,6 +10,7 @@
 * Implement container resources
 * Implement number of replicas
 * Refactor the code for DRY
+* Update an object only if a related part changes, don't try to do it on every reconciliation attempt
 * Should we create/update PVCs or require from user?
 * How can we enforce the mandatory secrets?
 * How do we reload pods whenever a key/cert secret changes?
