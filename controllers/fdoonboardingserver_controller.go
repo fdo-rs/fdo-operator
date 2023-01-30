@@ -19,6 +19,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"sort"
 	"time"
 
 	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
@@ -122,7 +123,7 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	files, err := r.listConfigMaps(log, ctx, req, server.Name)
 	if err != nil {
-		return r.ManageError(ctx, server, err)
+		return r.ManageErrorWithRequeue(ctx, server, err, 30*time.Second) // let the user fix the configuration
 	}
 
 	if _, err = r.createOrUpdateServiceInfoAPIConfigMap(log, server, files); err != nil {
@@ -507,41 +508,49 @@ func (r *FDOOnboardingServerReconciler) listConfigMaps(log logr.Logger, ctx cont
 		return nil, err
 	}
 	c := r.ReconcilerBase.GetClient()
-	files := make([]ServiceInfoFile, 0)
-	list := &corev1.ConfigMapList{}
 	selector := labels.NewSelector()
 	selector = selector.Add(*require)
-	if err := c.List(ctx, list, &client.ListOptions{
+	foundCms := &corev1.ConfigMapList{}
+	if err := c.List(ctx, foundCms, &client.ListOptions{
 		Namespace:     req.Namespace,
 		LabelSelector: selector,
 	}); err != nil {
 		return nil, err
 	}
-	for _, e := range list.Items {
+
+	files := make([]ServiceInfoFile, len(foundCms.Items))
+	for i, cm := range foundCms.Items {
 		config := &ServiceInfoFile{}
-		if err := readConfigFromAnnotation(e.Name, e.Annotations, config); err != nil {
+		if err := readServiceInfoFileFromConfigMap(cm, config); err != nil {
 			return nil, err
 		}
-		log.Info("ServiceInfo file found", "name", e.Name, "namespace", e.Namespace, "config", config)
-		files = append(files, *config)
+		log.Info("ServiceInfo file found", "name", cm.Name, "namespace", cm.Namespace, "config", config)
+		files[i] = *config
 	}
 
+	// maintain stable order to prevent unnecessary updates
+	sort.SliceStable(files, func(i, j int) bool { return files[i].ConfigMap < files[j].ConfigMap })
 	return files, nil
 }
 
-func readConfigFromAnnotation(name string, a map[string]string, c *ServiceInfoFile) error {
-	for k, v := range a {
+func readServiceInfoFileFromConfigMap(cm corev1.ConfigMap, c *ServiceInfoFile) error {
+	var fileName string
+	for k, v := range cm.Annotations {
 		if k == FileKey {
-			c.SourcePath = fmt.Sprintf(FilePathTemplate, name, v)
+			fileName = v
 		} else if k == PermissionsKey {
 			c.Permissions = v
 		} else if k == PathKey {
 			c.Path = v
 		}
 	}
-	if c.SourcePath == "" || c.Path == "" {
-		return fmt.Errorf("serviceinfo file name and destination path are required")
+	if fileName == "" || c.Path == "" {
+		return fmt.Errorf("serviceinfo file name and destination path are required: %s", cm.Name)
 	}
-	c.ConfigMap = name
+	if _, ok := cm.BinaryData[fileName]; !ok {
+		return fmt.Errorf("configmap '%s' does not contain file '%s'", cm.Name, fileName)
+	}
+	c.SourcePath = fmt.Sprintf(FilePathTemplate, cm.Name, fileName)
+	c.ConfigMap = cm.Name
 	return nil
 }
