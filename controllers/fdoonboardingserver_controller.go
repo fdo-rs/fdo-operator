@@ -123,7 +123,7 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 
 	files, err := r.listConfigMaps(log, ctx, req, server.Name)
 	if err != nil {
-		return r.ManageErrorWithRequeue(ctx, server, err, 30*time.Second) // let the user fix the configuration
+		return r.ManageErrorWithRequeue(ctx, server, err, 30*time.Second) // allow time for the user to fix the configuration
 	}
 
 	if _, err = r.createOrUpdateServiceInfoAPIConfigMap(log, server, files); err != nil {
@@ -138,8 +138,8 @@ func (r *FDOOnboardingServerReconciler) Reconcile(ctx context.Context, req ctrl.
 		return r.ManageError(ctx, server, err)
 	}
 
-	// Allow the controller to pick up new files
-	return r.ManageSuccessWithRequeue(ctx, server, 10*time.Second)
+	// Allow the controller to pick up new serviceinfo files
+	return r.ManageSuccessWithRequeue(ctx, server, 5*time.Minute)
 }
 
 // SetupWithManager sets up the controller with the Manager.
