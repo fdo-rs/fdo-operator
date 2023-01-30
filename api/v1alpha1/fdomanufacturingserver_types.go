@@ -39,20 +39,16 @@ type FDOManufacturingServerSpec struct {
 	// +listType=atomic
 	RendezvousServers []RendezvousServer `json:"rendezvousServers"`
 
-	// TODO:
 	Protocols *Protocols `json:"protocols"`
 }
 
 // RendezvousServer defines an entry of rendezvous server configuration
-// TODO: Implement full configuration parameters of the reference implementation
 type RendezvousServer struct {
 
 	// Hostname of a rendezvous server, must select either a hostname or an IP address
-	// TODO: Add validation
 	DNS string `json:"dns,omitempty"`
 
 	// IP address of a rendezvous server, must select either an IP address or a hostname
-	// TODO: Add validation
 	IPAddress string `json:"ipAddress,omitempty"`
 
 	// Rendezvous port for device connections

@@ -1,9 +1,24 @@
 ## Development TODO
 
-* Implement container resources
-* Implement number of replicas
+* Add field validations, Optional/Requires, default values and documentation
+* Modify the Owns to be more selective and watch only relevant resources
+* Let users annotate ConfigMaps/Secrets to be added as service-info files, regenerate the config automatically
+* Validate that a service info file exists inside the config map
+* Generate a new ConfigMap (with a random suffix) every time configuration changes to automatically trigger deployment updates
+* Implement unit tests
+* Update documentation
 * Allow custom hostnames in routes
 * Allow setting FDO log level (inside containers)
+* Implement container resources
+* Implement number of replicas
+* Refactor the code for DRY
+* Should we create/update PVCs or require from user?
+* How can we enforce the mandatory secrets?
+* How do we reload pods whenever a key/cert secret changes?
+* Allow customizing secret names and PVC names
+* Implement populating of the Status (esp. Pods, if needed)
+* Implement admission webhooks
+* Implement additional services info
 
 ## Setting Up
 

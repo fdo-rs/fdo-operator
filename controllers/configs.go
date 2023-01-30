@@ -121,7 +121,6 @@ type ServiceInfo struct {
 	Files                  []ServiceInfoFile                 `yaml:"files,omitempty"`
 	Commands               []ServiceInfoCommand              `yaml:"commands,omitempty"`
 	DiskEncryptionClevises []ServiceInfoDiskEncryptionClevis `yaml:"diskencryption_clevis,omitempty"`
-	// TODO: implement additional services info
 }
 
 type ServiceInfoInitialUser struct {
