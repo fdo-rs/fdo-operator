@@ -67,4 +67,5 @@ jobs:
       - name: Build and push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-catalog:v${{ env.VERSION }}
         run: make catalog-build && make catalog-push
         env:
+          CATALOG_IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-catalog:v${{ env.VERSION }}
           BUNDLE_IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-bundle@${{ steps.build-push-operator-bundle.outputs.digest }}
