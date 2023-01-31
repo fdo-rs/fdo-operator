@@ -1,3 +1,9 @@
+![lint](https://github.com/empovit/fdo-operator/actions/workflows/lint.yaml/badge.svg)
+![tests](https://github.com/empovit/fdo-operator/actions/workflows/test.yaml/badge.svg)
+[![codecov](https://codecov.io/gh/empovit/fdo-operator/branch/main/graph/badge.svg?token=EMH9QLP6NR)](https://codecov.io/gh/empovit/fdo-operator)
+[![go report](https://goreportcard.com/badge/github.com/empovit/fdo-operator)](https://goreportcard.com/report/github.com/empovit/fdo-operator)
+![Build and push images](https://github.com/empovit/fdo-operator/actions/workflows/images.yaml/badge.svg)
+
 # fdo-operator
 // TODO(user): Add simple overview of use/purpose
 
