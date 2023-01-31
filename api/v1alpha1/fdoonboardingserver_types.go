@@ -70,7 +70,6 @@ type FDOOnboardingServer struct {
 // ServiceInfo defines a custom device onboarding sequence run through service info API
 type ServiceInfo struct {
 	InitialUser            *InitialUser           `json:"initialUser,omitempty"`
-	Files                  []File                 `json:"files,omitempty"`
 	Commands               []Command              `json:"commands,omitempty"`
 	DiskEncryptionClevises []DiskEncryptionClevis `json:"diskencryptionClevis,omitempty"`
 }
@@ -78,12 +77,6 @@ type ServiceInfo struct {
 type InitialUser struct {
 	Username string   `json:"username"`
 	SSHKeys  []string `json:"sshKeys"`
-}
-
-type File struct {
-	Path        string `json:"path"`
-	Permissions string `json:"permissions,omitempty"`
-	SourcePath  string `json:"sourcePath"`
 }
 
 type Command struct {

@@ -132,6 +132,7 @@ type ServiceInfoFile struct {
 	Path        string `yaml:"path"`
 	Permissions string `yaml:"permissions,omitempty"`
 	SourcePath  string `yaml:"source_path"`
+	ConfigMap   string `yaml:"-"`
 }
 
 type ServiceInfoCommand struct {
@@ -153,7 +154,7 @@ type ServiceInfoDiskEncryptionClevisBinding struct {
 	Config string `yaml:"config,omitempty"`
 }
 
-func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboardingServer) error {
+func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboardingServer, files []ServiceInfoFile) error {
 	c.Bind = "0.0.0.0:8083"
 	c.DeviceSpecificStoreDriver = NewDriver("/etc/fdo/device_specific_serviceinfo")
 	c.ServiceInfoAuthToken = ServiceInfoAuthToken
@@ -168,13 +169,7 @@ func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboarding
 			SSHKeys:  user.SSHKeys,
 		}
 	}
-	if server.Spec.ServiceInfo.Files != nil {
-		files := server.Spec.ServiceInfo.Files
-		c.ServiceInfo.Files = make([]ServiceInfoFile, len(files))
-		for i, f := range files {
-			c.ServiceInfo.Files[i] = ServiceInfoFile(f)
-		}
-	}
+	c.ServiceInfo.Files = files
 	if server.Spec.ServiceInfo.Commands != nil {
 		commands := server.Spec.ServiceInfo.Commands
 		c.ServiceInfo.Commands = make([]ServiceInfoCommand, len(commands))
