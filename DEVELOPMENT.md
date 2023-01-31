@@ -7,14 +7,19 @@
 * Update documentation
 * Allow custom hostnames in routes
 * Allow setting FDO log level (inside containers)
+* Use the official FDO images by default
 * Implement container resources
 * Implement number of replicas
 * Refactor the code for DRY
+* Remove the use of github.com/redhat-cop/operator-utils
+* Smarter requeues in case of success and errors
 * Update an object only if a related part changes, don't try to do it on every reconciliation attempt
 * Should we create/update PVCs or require from user?
 * How can we enforce the mandatory secrets?
 * How do we reload pods whenever a key/cert secret changes?
 * Allow customizing secret names and PVC names
+* Store public certificates in ConfigMaps instead of secrets
+* Support secrets as sources of service-info files
 * Implement populating of the Status (esp. Pods, if needed)
 * Implement admission webhooks
 * Implement additional services info
