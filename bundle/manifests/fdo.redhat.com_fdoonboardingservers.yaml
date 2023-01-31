@@ -82,20 +82,6 @@ spec:
                       - reencrypt
                       type: object
                     type: array
-                  files:
-                    items:
-                      properties:
-                        path:
-                          type: string
-                        permissions:
-                          type: string
-                        sourcePath:
-                          type: string
-                      required:
-                      - path
-                      - sourcePath
-                      type: object
-                    type: array
                   initialUser:
                     properties:
                       sshKeys:
