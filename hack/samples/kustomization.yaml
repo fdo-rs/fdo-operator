@@ -1,8 +1,0 @@
-## Append samples you want in your CSV to this file as resources ##
-resources:
-- fdo-manufacturing-server.yml
-- fdo-onboarding-server.yml
-- fdo-rendezvous-server.yml
-- fdo_ownership_vouchers_pvc.yaml
-- fdo_sample_file_configmap.yaml
-#+kubebuilder:scaffold:manifestskustomizesamples

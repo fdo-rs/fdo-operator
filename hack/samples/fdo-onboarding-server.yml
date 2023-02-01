@@ -1,7 +1,7 @@
 apiVersion: fdo.redhat.com/v1alpha1
 kind: FDOOnboardingServer
 metadata:
-  name: fdo-onboarding-sample
+  name: onboarding-server
 spec:
   serviceInfo:
     commands:

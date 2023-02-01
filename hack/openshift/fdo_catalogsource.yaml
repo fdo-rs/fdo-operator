@@ -1,0 +1,8 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: CatalogSource
+metadata:
+  name: fdo-operators
+  namespace: openshift-marketplace
+spec:
+  sourceType: grpc
+  image: ghcr.io/empovit/fdo-operator-catalog:v99.0.0

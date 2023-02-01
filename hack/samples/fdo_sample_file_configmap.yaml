@@ -2,7 +2,7 @@
 apiVersion: v1
 metadata:
   labels:
-    fdo.serviceinfo.file/owner: fdo-manufacturing-sample
+    fdo.serviceinfo.file/owner: manufacturing-server
   annotations:
     fdo.serviceinfo.file/name: echo-to-file.sh
     fdo.serviceinfo.file/path: /root/msg-to-file.sh

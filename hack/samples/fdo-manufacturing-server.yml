@@ -1,7 +1,7 @@
 apiVersion: fdo.redhat.com/v1alpha1
 kind: FDOManufacturingServer
 metadata:
-  name: fdo-manufacturing-sample
+  name: manufacturing-sever
 spec:
   protocols:
     plainDI: false
@@ -15,4 +15,3 @@ spec:
       devicePort: 80
       ownerPort: 80
       protocol: http
-  replicas: 1

@@ -1,5 +1,5 @@
 apiVersion: fdo.redhat.com/v1alpha1
 kind: FDORendezvousServer
 metadata:
-  name: fdo-rendezvous-sample
+  name: rendezvous-server
 spec: {}
