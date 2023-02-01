@@ -1,0 +1,18 @@
+apiVersion: fdo.redhat.com/v1alpha1
+kind: FDOManufacturingServer
+metadata:
+  name: fdo-manufacturing-sample
+spec:
+  protocols:
+    plainDI: false
+    diun:
+      allowedKeyStorageTypes:
+        - FileSystem
+        - Tpm
+      keyType: SECP256R1
+  rendezvousServers:
+    - dns: rendezvous-server-fdo.apps-crc.testing
+      devicePort: 80
+      ownerPort: 80
+      protocol: http
+  replicas: 1

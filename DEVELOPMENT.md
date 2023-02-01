@@ -21,6 +21,7 @@
 * Store public certificates in ConfigMaps instead of secrets
 * Support secrets as sources of service-info files
 * Implement populating of the Status (esp. Pods, if needed)
+* Implement liveness and readiness probes
 * Implement admission webhooks
 * Implement additional services info
 

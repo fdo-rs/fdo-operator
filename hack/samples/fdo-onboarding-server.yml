@@ -1,0 +1,14 @@
+apiVersion: fdo.redhat.com/v1alpha1
+kind: FDOOnboardingServer
+metadata:
+  name: fdo-onboarding-sample
+spec:
+  serviceInfo:
+    commands:
+      - command: /root/msg-to-file.sh
+        args:
+          - This device has been onboarded by FDO
+          - /root/fdo_message.txt
+        mayFail: false
+        returnStdOut: true
+        returnStdErr: true
