@@ -49,7 +49,7 @@ jobs:
 
       - name: Build and push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ env.VERSION }}
         id: build-push-operator
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           push: true
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build and push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-bundle:v${{ env.VERSION }}
         id: build-push-operator-bundle
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v4
         with:
           context: .
           file: bundle.Dockerfile
