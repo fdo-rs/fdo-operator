@@ -64,6 +64,7 @@ const (
 )
 
 const (
+	FileOwnerLabel   = "fdo.serviceinfo.file/owner"
 	FileKey          = "fdo.serviceinfo.file/name"
 	PathKey          = "fdo.serviceinfo.file/path"
 	PermissionsKey   = "fdo.serviceinfo.file/permissions"
@@ -503,7 +504,7 @@ func getLabels(svc FDOServiceType) map[string]string {
 }
 
 func (r *FDOOnboardingServerReconciler) listConfigMaps(log logr.Logger, ctx context.Context, req ctrl.Request, name string) ([]ServiceInfoFile, error) {
-	require, err := labels.NewRequirement("serviceinfo.file/owner", selection.Equals, []string{name})
+	require, err := labels.NewRequirement(FileOwnerLabel, selection.Equals, []string{name})
 	if err != nil {
 		return nil, err
 	}
