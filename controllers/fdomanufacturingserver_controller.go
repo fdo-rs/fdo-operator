@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
 	"github.com/go-logr/logr"
@@ -41,8 +42,8 @@ type FDOManufacturingServerReconciler struct {
 }
 
 const (
-	manufacturingConfigMap    = "fdo-manufacturing-config"
-	manufacturingDefaultImage = "quay.io/vemporop/fdo-manufacturing-server:1.0"
+	manufacturingConfigMapTemplate = "%s-config"
+	manufacturingDefaultImage      = "quay.io/vemporop/fdo-manufacturing-server:1.0"
 )
 
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdomanufacturingservers,verbs=get;list;watch;create;update;patch;delete
@@ -210,7 +211,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 						VolumeSource: corev1.VolumeSource{
 							ConfigMap: &corev1.ConfigMapVolumeSource{
 								LocalObjectReference: corev1.LocalObjectReference{
-									Name: manufacturingConfigMap,
+									Name: fmt.Sprintf(manufacturingConfigMapTemplate, server.Name),
 								},
 							},
 						},
@@ -401,7 +402,7 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateRoute(log logr.Logger, 
 
 func (r *FDOManufacturingServerReconciler) createOrUpdateConfigMap(log logr.Logger, server *fdov1alpha1.FDOManufacturingServer) (*corev1.ConfigMap, error) {
 	labels := getLabels(ManufacturingServiceType)
-	configMap := &corev1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: manufacturingConfigMap, Namespace: server.Namespace, Labels: labels}}
+	configMap := &corev1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: fmt.Sprintf(manufacturingConfigMapTemplate, server.Name), Namespace: server.Namespace, Labels: labels}}
 	op, err := controllerutil.CreateOrUpdate(context.TODO(), r.GetClient(), configMap, func() error {
 		config, err := r.generateConfig(server)
 		if err != nil {
