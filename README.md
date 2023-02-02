@@ -10,6 +10,7 @@ The FDO Operator deploys [FIDO Device Onboard (FDO)](https://fidoalliance.org/in
 ## Description
 The FDO Operator makes it easier to deploy and run any of the FDO servers (manufacturing, rendezvous, or owner-onboarding) on Red Hat OpenShift, catering to both device manufacturers and device owners. It is based on the [Fedora IoT implementation of FDO](https://github.com/fedora-iot/fido-device-onboard-rs/).
 
+## TODO
 
 Keep in mind that the operator is a work in progress, is highly opinionated and currently has many limitations.
 
@@ -67,7 +68,7 @@ Before some of the custom resources created by the operator can start, they requ
 
   and deployed to the cluster with
 
-  ```sh
+  ```console
   make keys-push
   ```
 
