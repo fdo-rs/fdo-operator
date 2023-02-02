@@ -18,6 +18,7 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-logr/logr"
 	routev1 "github.com/openshift/api/route/v1"
@@ -36,8 +37,8 @@ import (
 )
 
 const (
-	rendezvousConfigMap = "fdo-rendezvous-config"
-	rendezvousImage     = "quay.io/vemporop/fdo-rendezvous-server:1.0"
+	rendezvousConfigMapTemplate = "%s-config"
+	rendezvousImage             = "quay.io/vemporop/fdo-rendezvous-server:1.0"
 )
 
 // FDORendezvousServerReconciler reconciles a FDORendezvousServer object
@@ -173,7 +174,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 						VolumeSource: corev1.VolumeSource{
 							ConfigMap: &corev1.ConfigMapVolumeSource{
 								LocalObjectReference: corev1.LocalObjectReference{
-									Name: rendezvousConfigMap,
+									Name: fmt.Sprintf(rendezvousConfigMapTemplate, server.Name),
 								},
 							},
 						},
@@ -266,7 +267,7 @@ func (r *FDORendezvousServerReconciler) createOrUpdateRoute(log logr.Logger, ser
 
 func (r *FDORendezvousServerReconciler) createOrUpdateConfigMap(log logr.Logger, server *fdov1alpha1.FDORendezvousServer) (*corev1.ConfigMap, error) {
 	labels := getLabels(RendezvousServiceType)
-	configMap := &corev1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: rendezvousConfigMap, Namespace: server.Namespace, Labels: labels}}
+	configMap := &corev1.ConfigMap{ObjectMeta: metav1.ObjectMeta{Name: fmt.Sprintf(rendezvousConfigMapTemplate, server.Name), Namespace: server.Namespace, Labels: labels}}
 	op, err := controllerutil.CreateOrUpdate(context.TODO(), r.GetClient(), configMap, func() error {
 		config, err := r.generateConfig(server)
 		if err != nil {
