@@ -276,7 +276,7 @@ keys-gen: fdo-admin-img ## Generate FDO keys and certificates
 	done
 
 .PHONY: keys-push
-keys-push:
+keys-push: ## Create secrets for FDO keys and certificates
 	for subj in diun manufacturer device-ca owner; \
 	do \
 		file="${FDO_KEYS_DIR}"/$$(echo $${subj} | awk '{ gsub("-", "_" ,$$1); print $$1 }') && \

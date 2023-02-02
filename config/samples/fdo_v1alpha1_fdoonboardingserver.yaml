@@ -3,10 +3,7 @@ kind: FDOOnboardingServer
 metadata:
   labels:
     app.kubernetes.io/name: fdoonboardingserver
-    app.kubernetes.io/instance: fdoonboardingserver-sample
     app.kubernetes.io/part-of: fdo-operator
-    app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: fdo-operator
-  name: fdoonboardingserver-sample
+  name: onboarding-server
 spec:
-  # TODO(user): Add fields here

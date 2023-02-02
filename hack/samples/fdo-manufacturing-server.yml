@@ -1,11 +1,7 @@
 apiVersion: fdo.redhat.com/v1alpha1
 kind: FDOManufacturingServer
 metadata:
-  labels:
-    app.kubernetes.io/name: fdomanufacturingserver
-    app.kubernetes.io/part-of: fdo-operator
-    app.kubernetes.io/created-by: fdo-operator
-  name: manufacturing-server
+  name: manufacturing-sever
 spec:
   protocols:
     plainDI: false
@@ -15,7 +11,7 @@ spec:
         - Tpm
       keyType: SECP256R1
   rendezvousServers:
-    - dns: ""
+    - dns: rendezvous-server-fdo.apps-crc.testing
       devicePort: 80
       ownerPort: 80
       protocol: http
