@@ -46,7 +46,7 @@ Keep in mind that the operator is a work in progress, is highly opinionated and 
   * Remove the use of _github.com/redhat-cop/operator-utils_ as outdated
   * Implements smarter re-queues in case of success and errors in the reconcile logic
   * Update an object only if its related part changes instead of trying to do it on every reconciliation attempt
-  * Populate the `Status` of a custom resource to better reflect it state
+  * Populate the `Status` of a custom resource to better reflect its state
   * We can store public certificates in `ConfigMaps` instead of `Secrets` (as usually done in OpenShift).
 
 * Finally, there are a few open questions:
