@@ -1,7 +1,7 @@
 apiVersion: fdo.redhat.com/v1alpha1
 kind: FDOManufacturingServer
 metadata:
-  name: manufacturing-sever
+  name: manufacturing-server
 spec:
   protocols:
     plainDI: false

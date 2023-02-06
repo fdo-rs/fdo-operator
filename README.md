@@ -110,7 +110,7 @@ binaryData:
   oc apply -f hack/samples/
   ```
 
-  The manufacturing server is now available at `http://manufacturing-sever-fdo.apps-crc.testing:80`.
+  The manufacturing server is now available at `http://manufacturing-server-fdo.apps-crc.testing:80`.
 
 You can list generated ownership vouchers by running `exec` in a manufacturing server pod, e.g.
 
