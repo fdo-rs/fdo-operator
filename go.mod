@@ -6,7 +6,7 @@ require (
 	github.com/go-logr/logr v1.2.3
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo/v2 v2.8.1
-	github.com/onsi/gomega v1.26.0
+	github.com/onsi/gomega v1.27.0
 	github.com/openshift/api v0.0.0-20230120195050-6ba31fa438f2
 	github.com/redhat-cop/operator-utils v1.3.5
 	gopkg.in/yaml.v2 v2.4.0
