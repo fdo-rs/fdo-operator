@@ -6,7 +6,7 @@ require (
 	github.com/go-logr/logr v1.2.3
 	github.com/golang/mock v1.6.0
 	github.com/onsi/ginkgo/v2 v2.8.1
-	github.com/onsi/gomega v1.27.0
+	github.com/onsi/gomega v1.27.1
 	github.com/openshift/api v0.0.0-20230120195050-6ba31fa438f2
 	github.com/redhat-cop/operator-utils v1.3.5
 	gopkg.in/yaml.v2 v2.4.0
@@ -61,7 +61,7 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	go.uber.org/zap v1.24.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.4.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/term v0.5.0 // indirect
