@@ -38,6 +38,9 @@ BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 # BUNDLE_GEN_FLAGS are the flags passed to the operator-sdk generate bundle command
 BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 
+# CONTAINER_TOOL lets choose container command, e.g. from Docker/Podamn
+CONTAINER_TOOL ?= docker
+
 # ADMIN_CLI_IMG defines a local image for running FDO admin commands without installing FDO binaries
 ADMIN_CLI_IMG ?= fdo-admin-cli:latest
 
@@ -134,11 +137,11 @@ run: manifests generate fmt vet ## Run a controller from your host.
 
 .PHONY: docker-build
 docker-build: test ## Build docker image with the manager.
-	docker build -t ${IMG} .
+	${CONTAINER_TOOL} build -t ${IMG} .
 
 .PHONY: docker-push
 docker-push: ## Push docker image with the manager.
-	docker push ${IMG}
+	${CONTAINER_TOOL} push ${IMG}
 
 ##@ Deployment
 
@@ -216,7 +219,7 @@ bundle: manifests kustomize ## Generate bundle manifests and metadata, then vali
 
 .PHONY: bundle-build
 bundle-build: ## Build the bundle image.
-	docker build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
+	${CONTAINER_TOOL} build -f bundle.Dockerfile -t $(BUNDLE_IMG) .
 
 .PHONY: bundle-push
 bundle-push: ## Push the bundle image.
@@ -256,7 +259,7 @@ endif
 # https://github.com/operator-framework/community-operators/blob/7f1438c/docs/packaging-operator.md#updating-your-existing-operator
 .PHONY: catalog-build
 catalog-build: opm ## Build a catalog image.
-	$(OPM) index add --container-tool docker --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
+	$(OPM) index add --container-tool ${CONTAINER_TOOL} --mode semver --tag $(CATALOG_IMG) --bundles $(BUNDLE_IMGS) $(FROM_INDEX_OPT)
 
 # Push the catalog image.
 .PHONY: catalog-push
@@ -265,14 +268,14 @@ catalog-push: ## Push a catalog image.
 
 .PHONY: fdo-admin-img
 fdo-admin-img: ## Build an FDO admin CLI container image
-	docker build -f fdo-admin-cli.Dockerfile -t ${ADMIN_CLI_IMG} .
+	${CONTAINER_TOOL} build -f fdo-admin-cli.Dockerfile -t ${ADMIN_CLI_IMG} .
 
 .PHONY: keys-gen
 keys-gen: fdo-admin-img ## Generate FDO keys and certificates
 	mkdir -p "${FDO_KEYS_DIR}"
 	for subj in diun manufacturer device-ca owner; \
 	do \
-		docker run --rm -d -v "${FDO_KEYS_DIR}":/etc/fdo/keys:rw "${ADMIN_CLI_IMG}" \
+		${CONTAINER_TOOL} run --rm -d -v "${FDO_KEYS_DIR}":/etc/fdo/keys:rw "${ADMIN_CLI_IMG}" \
 			generate-key-and-cert --organization "${FDO_CERT_ORG}" --country "${FDO_CERT_COUNTRY}" --destination-dir /etc/fdo/keys $${subj}; \
 	done
 
