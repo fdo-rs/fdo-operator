@@ -55,6 +55,12 @@ jobs:
           push: true
           tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ env.VERSION }}"
 
+      - name: Update bundle manifests and metadata
+        id: build-update-operator-bundle
+        run: make bundle
+        env:
+          IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ env.VERSION }}
+
       - name: Build and push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-bundle:v${{ env.VERSION }}
         id: build-push-operator-bundle
         uses: docker/build-push-action@v4
