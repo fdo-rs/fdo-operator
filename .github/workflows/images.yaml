@@ -14,6 +14,7 @@ on:
 env:
   IMAGE_NAME: ${{ github.repository }}
   REGISTRY: ghcr.io
+  OPERATOR_SDK_VER: 4.13.4
 
 jobs:
   get-operator-version:
@@ -55,8 +56,10 @@ jobs:
           push: true
           tags: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ env.VERSION }}"
 
+      - name: Install operator-sdk CLI
+        run: curl -s -L https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/operator-sdk/${{ env.OPERATOR_SDK_VER }}/operator-sdk-linux-x86_64.tar.gz | tar zxvf - -C /usr/local/bin/ --strip-components=2 ./x86_64/operator-sdk
+
       - name: Update bundle manifests and metadata
-        id: build-update-operator-bundle
         run: make bundle
         env:
           IMG: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:v${{ env.VERSION }}
