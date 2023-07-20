@@ -10,8 +10,8 @@ require (
 	github.com/openshift/api v0.0.0-20230414143018-3367bc7e6ac7
 	github.com/redhat-cop/operator-utils v1.3.6
 	gopkg.in/yaml.v2 v2.4.0
-	k8s.io/api v0.27.3
-	k8s.io/apimachinery v0.27.3
+	k8s.io/api v0.27.4
+	k8s.io/apimachinery v0.27.4
 	k8s.io/client-go v0.27.3
 	sigs.k8s.io/controller-runtime v0.15.0
 )
