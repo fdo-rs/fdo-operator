@@ -9,6 +9,14 @@ updates:
     directory: /
     schedule:
       interval: daily
+    groups:
+      k8s:
+        patterns:
+          - "k8s.io/*"
+      unit-testing:
+        patterns:
+          - "github.com/onsi/ginkgo"
+          - "github.com/onsi/gomega"
 
   - package-ecosystem: github-actions
     directory: /
