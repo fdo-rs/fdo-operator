@@ -8,7 +8,7 @@ require (
 	github.com/onsi/gomega v1.27.10
 	github.com/openshift/api v0.0.0-20230823114715-5fdd7511b790
 	github.com/redhat-cop/operator-utils v1.3.6
-	go.uber.org/mock v0.2.0
+	go.uber.org/mock v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.28.2
 	k8s.io/apimachinery v0.28.2
