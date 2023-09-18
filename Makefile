@@ -188,7 +188,7 @@ CONTROLLER_TOOLS_VERSION ?= v0.12.1
 # From https://golangci-lint.run/product/roadmap/
 GOLANGCI_LINT_VERSION ?= v1.54.1
 # From https://github.com/uber-go/mock/releases
-GOLANG_MOCKGEN_VERSION ?= v0.2.0
+GOLANG_MOCKGEN_VERSION ?= v0.3.0
 
 KUSTOMIZE_INSTALL_SCRIPT ?= "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"
 .PHONY: kustomize
