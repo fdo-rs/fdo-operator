@@ -184,7 +184,7 @@ GOLANGCI_LINT ?= $(LOCALBIN)/golangci-lint
 # From https://github.com/kubernetes-sigs/kustomize/releases
 KUSTOMIZE_VERSION ?= v5.1.1
 # From https://github.com/kubernetes-sigs/controller-tools/releases
-CONTROLLER_TOOLS_VERSION ?= v0.12.1
+CONTROLLER_TOOLS_VERSION ?= v0.13.0
 # From https://golangci-lint.run/product/roadmap/
 GOLANGCI_LINT_VERSION ?= v1.54.1
 # From https://github.com/uber-go/mock/releases
