@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/go-logr/logr v1.2.4
 	github.com/onsi/ginkgo/v2 v2.13.0
-	github.com/onsi/gomega v1.28.1
+	github.com/onsi/gomega v1.29.0
 	github.com/openshift/api v0.0.0-20230823114715-5fdd7511b790
 	github.com/redhat-cop/operator-utils v1.3.7
 	go.uber.org/mock v0.3.0
