@@ -7,7 +7,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.13.1
 	github.com/onsi/gomega v1.30.0
 	github.com/openshift/api v0.0.0-20230823114715-5fdd7511b790
-	github.com/redhat-cop/operator-utils v1.3.7
+	github.com/redhat-cop/operator-utils v1.3.8
 	go.uber.org/mock v0.3.0
 	gopkg.in/yaml.v2 v2.4.0
 	k8s.io/api v0.28.4
