@@ -215,7 +215,7 @@ spec:
   - edge
   links:
   - name: FDO Operator
-    url: https://github.com/empovit/fdo-operator
+    url: https://github.com/fdo-rs/fdo-operator
   maintainers:
   - email: vemporop@redhat.com
     name: Vitaliy Emporopulo

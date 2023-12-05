@@ -35,8 +35,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 	"sigs.k8s.io/controller-runtime/pkg/webhook"
 
-	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
-	"github.com/empovit/fdo-operator/controllers"
+	fdov1alpha1 "github.com/fdo-rs/fdo-operator/api/v1alpha1"
+	"github.com/fdo-rs/fdo-operator/controllers"
 	//+kubebuilder:scaffold:imports
 )
 

@@ -19,7 +19,7 @@ package controllers
 import (
 	"fmt"
 
-	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
+	fdov1alpha1 "github.com/fdo-rs/fdo-operator/api/v1alpha1"
 	routev1 "github.com/openshift/api/route/v1"
 )
 

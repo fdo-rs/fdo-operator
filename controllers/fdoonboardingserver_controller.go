@@ -22,7 +22,7 @@ import (
 	"sort"
 	"time"
 
-	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
+	fdov1alpha1 "github.com/fdo-rs/fdo-operator/api/v1alpha1"
 	"github.com/go-logr/logr"
 	routev1 "github.com/openshift/api/route/v1"
 	util "github.com/redhat-cop/operator-utils/pkg/util"

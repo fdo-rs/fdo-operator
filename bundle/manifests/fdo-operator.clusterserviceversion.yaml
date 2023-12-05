@@ -64,7 +64,8 @@ metadata:
         }
       ]
     capabilities: Basic Install
-    operators.operatorframework.io/builder: operator-sdk-v1.25.0-ocp
+    createdAt: "2023-12-05T19:25:48Z"
+    operators.operatorframework.io/builder: operator-sdk-v1.28.0-ocp
     operators.operatorframework.io/project_layout: go.kubebuilder.io/v3
   name: fdo-operator.v0.0.1
   namespace: placeholder
@@ -539,7 +540,7 @@ spec:
   - edge
   links:
   - name: FDO Operator
-    url: https://github.com/empovit/fdo-operator
+    url: https://github.com/fdo-rs/fdo-operator
   maintainers:
   - email: vemporop@redhat.com
     name: Vitaliy Emporopulo
