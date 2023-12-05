@@ -29,6 +29,7 @@ type FDOManufacturingServerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Container image
+	// +kubebuilder:default="quay.io/vemporop/fdo-manufacturing-server:rhel9.3"
 	Image string `json:"image,omitempty"`
 
 	// Log level: TRACE, DEBUG, INFO(default), WARN, ERROR or OFF

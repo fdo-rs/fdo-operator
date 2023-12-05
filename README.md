@@ -23,9 +23,11 @@ Keep in mind that the operator is a work in progress, is highly opinionated and 
 
 * The log level inside FDO containers is TRACE by default and currently cannot be changed.
 
-* The container images the operator is used by default are stable but not maintained. It could be better to use either the [development FDO images](https://quay.io/organization/fido-fdo) or Red Hat certified images for FDO once available.
+* The container images used by the operator by default are stable, but may not be of the latest version. We are planning to to use either the [development FDO images](https://quay.io/organization/fido-fdo), or Red Hat certified images for FDO when they become available. This might require some development.
 
-* It is not possible to explicitly specify container resources (requests/limits). This should change.
+* Make sure you use compatible client-server versions. It is probably best to use at least the same RHEL version on both sides to avoid issues, e.g. RHEL 9.3. The server CRDs allow changing server images. See the files in [hack/samples](hack/samples/) for examples.
+
+* It is not possible to explicitly specify container resources (requests/limits). This should be changed in the future.
 
 * There are currently no liveness or readiness probes.
 
@@ -33,20 +35,20 @@ Keep in mind that the operator is a work in progress, is highly opinionated and 
 
 * The names of required secrets (for keys and certificates) and persistent volume claims (for ownership vouchers) are hard-coded. We should allow customizing those, and/or make them include a CR instance name for deduplication within the same namespace.
 
-* Device-specific service-info configuration is not supported. Enabling this functionality would require a persistent volume, exposing the admin API via an endpoint, and managing a secret for the admin authentication token.
+* Device-specific service-info configuration is currently not supported. Enabling this functionality would require a persistent volume, exposing the admin API via an endpoint, and managing a secret for the admin authentication token.
 
-* Currently, service-info files are automatically added to the onboarding configuration by creating and annotating `ConfigMaps`. Those have size limitations and we may consider other mechanisms as sources of service-info files. In addition, `Secrets` should be supported as a source of sensitive files.
+* Currently, service-info files are automatically added to the onboarding configuration by creating and annotating `ConfigMaps`. Those have size limitations and we may consider other mechanisms as a source of service-info files. In addition, `Secrets` should be supported as a source of sensitive files.
 
 * There is also room for many optimizations and code improvements:
 
   * Modify the watchers (`Owns()`) to be more selective and watch only relevant resources.
   * Generate a new `ConfigMap` with a random suffix every time the configuration changes to automatically trigger deployment updates.
   * Write a lot more unit tests.
-  * Refactor the code for DRY
-  * Remove the use of _github.com/redhat-cop/operator-utils_ as outdated
-  * Implements smarter re-queues in case of success and errors in the reconcile logic
-  * Update an object only if its related part changes instead of trying to do it on every reconciliation attempt
-  * Populate the `Status` of a custom resource to better reflect its state
+  * Refactor the code for DRY.
+  * Remove the use of _github.com/redhat-cop/operator-utils_ as it is outdated.
+  * Implement smarter re-queues in case of success and errors in the reconcile logic.
+  * Update a resource only if its related part changes instead of trying to do it on every reconciliation attempt.
+  * Populate the `Status` of a custom resource to better reflect its state.
   * We can store public certificates in `ConfigMaps` instead of `Secrets` (as usually done in OpenShift).
 
 * Finally, there are a few open questions:
@@ -99,7 +101,12 @@ binaryData:
 
 **Note:** This guide assumes that you are running on Red Hat OpenShift Local (CRC) and your current namespace for testing is named `fdo`.
 
-1. Install the operator in [any standard way](https://docs.openshift.com/container-platform/4.12/operators/operator_sdk/golang/osdk-golang-tutorial.html#osdk-run-operator_osdk-golang-tutorial) for operators, or from the catalog at `ghcr.io/fdo-rs/fdo-operator-catalog:v99.0.0`.
+1. Install the operator in [any standard way](https://docs.openshift.com/container-platform/4.12/operators/operator_sdk/golang/osdk-golang-tutorial.html#osdk-run-operator_osdk-golang-tutorial) for operators, or from a catalog image at `ghcr.io/fdo-rs/fdo-operator-catalog`:
+
+   ```console
+   oc apply -f hack/openshift/fdo_catalogsource.yaml
+   oc apply -f hack/openshift/fdo_operator.yaml
+   ```
 
 2. Create the required secrets as described in [Getting Started](#getting-started).
 
@@ -126,14 +133,14 @@ oc cp manufacturing-server-<pod-id>:/etc/fdo/ownership_vouchers/<device-guid> <d
 When testing FDO onboarding using OpenShift Local, you may need to enable traffic between a device and the OpenShift cluster. For instance, if you are simulating a device using a VM, you can allow the VM to access the OpenShift Local (CRC) cluster as explained in [Libvirt routing between two NAT networks](https://serverfault.com/questions/1109903/libvirt-routing-between-two-nat-networks):
 
 ```console
-sudo iptables -t nat -I POSTROUTING 1 -s 192.168.130.0/24 -d 192.168.122.0/24 -j ACCEPT
-sudo iptables -t nat -I POSTROUTING 1 -s 192.168.122.0/24 -d 192.168.130.0/24 -j ACCEPT
+sudo iptables -t nat -I POSTROUTING 1 -s 192.168.130.0/24 -d 192.168.124.0/24 -j ACCEPT
+sudo iptables -t nat -I POSTROUTING 1 -s 192.168.124.0/24 -d 192.168.130.0/24 -j ACCEPT
 
-sudo iptables -I FORWARD 1 -s 192.168.122.0/24 -d 192.168.130.0/24 -j ACCEPT
-sudo iptables -I FORWARD 1 -s 192.168.130.0/24 -d 192.168.122.0/24 -j ACCEPT
+sudo iptables -I FORWARD 1 -s 192.168.124.0/24 -d 192.168.130.0/24 -j ACCEPT
+sudo iptables -I FORWARD 1 -s 192.168.130.0/24 -d 192.168.124.0/24 -j ACCEPT
 ```
 
-where `192.168.130.0/24` and `192.168.122.0/24` are the two libvirt networks, one is for CRC (usually `crc`) and the other for VMs (e.g. `default`).
+where `192.168.130.0/24` and `192.168.124.0/24` are the two libvirt networks, one is for CRC (usually `crc`) and the other for VMs (e.g. `default`).
 
 ## License
 

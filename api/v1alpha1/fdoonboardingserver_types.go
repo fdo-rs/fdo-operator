@@ -29,11 +29,11 @@ type FDOOnboardingServerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Owner-onboarding server container image
-	// +kubebuilder:default="quay.io/vemporop/fdo-owner-onboarding-server:1.0"
+	// +kubebuilder:default="quay.io/vemporop/fdo-owner-onboarding-server:rhel9.3"
 	OwnerOnboardingImage string `json:"ownerOnboardingImage,omitempty"`
 
 	// ServiceInfo API server container image
-	// +kubebuilder:default="quay.io/vemporop/fdo-serviceinfo-api-server:1.0"
+	// +kubebuilder:default="quay.io/vemporop/fdo-serviceinfo-api-server:rhel9.3"
 	ServiceInfoImage string `json:"serviceInfoImage,omitempty"`
 
 	// Service info device onboarding sequence

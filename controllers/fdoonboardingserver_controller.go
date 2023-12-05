@@ -59,8 +59,8 @@ const (
 	serviceInfoAPIConfigMapTemplate  = "%s-serviceinfo-api-config"
 	ownershipVouchersPVC             = "fdo-ownership-vouchers-pvc"
 	serviceInfoFilesPVC              = "fdo-serviceinfo-files-pvc"
-	ownerOnboardingDefaultImage      = "quay.io/vemporop/fdo-owner-onboarding-server:1.0"
-	serviceInfoAPIDefaultImage       = "quay.io/vemporop/fdo-serviceinfo-api-server:1.0"
+	ownerOnboardingDefaultImage      = "quay.io/vemporop/fdo-owner-onboarding-server:rhel9.3"
+	serviceInfoAPIDefaultImage       = "quay.io/vemporop/fdo-serviceinfo-api-server:rhel9.3"
 )
 
 const (

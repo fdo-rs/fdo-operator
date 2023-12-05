@@ -5,7 +5,7 @@ metadata:
     fdo.serviceinfo.file/owner: onboarding-server
   annotations:
     fdo.serviceinfo.file/name: echo-to-file.sh
-    fdo.serviceinfo.file/path: /root/msg-to-file.sh
+    fdo.serviceinfo.file/path: /var/tmp/msg-to-file.sh
     fdo.serviceinfo.file/permissions: '755'
   name: fdo-sample-serviceinfo-file
 immutable: false

@@ -39,10 +39,10 @@ BUNDLE_IMG ?= $(IMAGE_TAG_BASE)-bundle:v$(VERSION)
 BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 
 # CONTAINER_TOOL lets choose container command, e.g. from Docker/Podamn
-CONTAINER_TOOL ?= docker
+CONTAINER_TOOL ?= podman
 
-# ADMIN_CLI_IMG defines a local image for running FDO admin commands without installing FDO binaries
-ADMIN_CLI_IMG ?= fdo-admin-cli:latest
+# ADMIN_CLI_IMG defines an image for running FDO admin commands without installing FDO binaries
+ADMIN_CLI_IMG ?= quay.io/vemporop/fdo-admin-cli:rhel9.3
 
 # FDO_CERT_ORG defines the org of test FDO certificates
 FDO_CERT_ORG ?= Example.com
@@ -271,16 +271,12 @@ catalog-build: opm ## Build a catalog image.
 catalog-push: ## Push a catalog image.
 	$(MAKE) docker-push IMG=$(CATALOG_IMG)
 
-.PHONY: fdo-admin-img
-fdo-admin-img: ## Build an FDO admin CLI container image
-	${CONTAINER_TOOL} build -f fdo-admin-cli.Dockerfile -t ${ADMIN_CLI_IMG} .
-
 .PHONY: keys-gen
-keys-gen: fdo-admin-img ## Generate FDO keys and certificates
+keys-gen: ## Generate FDO keys and certificates
 	mkdir -p "${FDO_KEYS_DIR}"
 	for subj in diun manufacturer device-ca owner; \
 	do \
-		${CONTAINER_TOOL} run --rm -d -v "${FDO_KEYS_DIR}":/etc/fdo/keys:rw "${ADMIN_CLI_IMG}" \
+		${CONTAINER_TOOL} run --privileged --rm -ti -v "${FDO_KEYS_DIR}":/etc/fdo/keys:rw "${ADMIN_CLI_IMG}" \
 			generate-key-and-cert --organization "${FDO_CERT_ORG}" --country "${FDO_CERT_COUNTRY}" --destination-dir /etc/fdo/keys $${subj}; \
 	done
 
