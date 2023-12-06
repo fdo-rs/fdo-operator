@@ -14,8 +14,8 @@ import (
 	"k8s.io/client-go/kubernetes/scheme"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
-	fdov1alpha1 "github.com/empovit/fdo-operator/api/v1alpha1"
-	"github.com/empovit/fdo-operator/internal/client"
+	fdov1alpha1 "github.com/fdo-rs/fdo-operator/api/v1alpha1"
+	"github.com/fdo-rs/fdo-operator/internal/client"
 )
 
 var _ = Describe("FDOOnboardingServerReconciler", func() {

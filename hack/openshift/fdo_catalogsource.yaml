@@ -5,4 +5,4 @@ metadata:
   namespace: openshift-marketplace
 spec:
   sourceType: grpc
-  image: ghcr.io/empovit/fdo-operator-catalog:v99.0.0
+  image: ghcr.io/fdo-rs/fdo-operator-catalog:v99.0.0

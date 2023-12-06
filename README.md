@@ -1,8 +1,7 @@
-![lint](https://github.com/empovit/fdo-operator/actions/workflows/lint.yaml/badge.svg)
-![tests](https://github.com/empovit/fdo-operator/actions/workflows/test.yaml/badge.svg)
-[![codecov](https://codecov.io/gh/empovit/fdo-operator/branch/main/graph/badge.svg?token=EMH9QLP6NR)](https://codecov.io/gh/empovit/fdo-operator)
-[![go report](https://goreportcard.com/badge/github.com/empovit/fdo-operator)](https://goreportcard.com/report/github.com/empovit/fdo-operator)
-![Build and push images](https://github.com/empovit/fdo-operator/actions/workflows/images.yaml/badge.svg)
+![lint](https://github.com/fdo-rs/fdo-operator/actions/workflows/lint.yaml/badge.svg)
+![tests](https://github.com/fdo-rs/fdo-operator/actions/workflows/test.yaml/badge.svg)
+[![go report](https://goreportcard.com/badge/github.com/fdo-rs/fdo-operator)](https://goreportcard.com/report/github.com/fdo-rs/fdo-operator)
+![Build and push images](https://github.com/fdo-rs/fdo-operator/actions/workflows/images.yaml/badge.svg)
 
 # FDO Operator
 The FDO Operator deploys [FIDO Device Onboard (FDO)](https://fidoalliance.org/intro-to-fido-device-onboard/) servers on Red Hat OpenShift.
@@ -100,7 +99,7 @@ binaryData:
 
 **Note:** This guide assumes that you are running on Red Hat OpenShift Local (CRC) and your current namespace for testing is named `fdo`.
 
-1. Install the operator in [any standard way](https://docs.openshift.com/container-platform/4.12/operators/operator_sdk/golang/osdk-golang-tutorial.html#osdk-run-operator_osdk-golang-tutorial) for operators, or from the catalog at `ghcr.io/empovit/fdo-operator-catalog:v99.0.0`.
+1. Install the operator in [any standard way](https://docs.openshift.com/container-platform/4.12/operators/operator_sdk/golang/osdk-golang-tutorial.html#osdk-run-operator_osdk-golang-tutorial) for operators, or from the catalog at `ghcr.io/fdo-rs/fdo-operator-catalog:v99.0.0`.
 
 2. Create the required secrets as described in [Getting Started](#getting-started).
 
