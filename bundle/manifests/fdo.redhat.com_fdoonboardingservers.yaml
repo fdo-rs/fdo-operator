@@ -36,7 +36,7 @@ spec:
             description: FDOOnboardingServerSpec defines the desired state of FDOOnboardingServer
             properties:
               ownerOnboardingImage:
-                default: quay.io/vemporop/fdo-owner-onboarding-server:1.0
+                default: quay.io/vemporop/fdo-owner-onboarding-server:rhel9.3
                 description: Owner-onboarding server container image
                 type: string
               serviceInfo:
@@ -96,7 +96,7 @@ spec:
                     type: object
                 type: object
               serviceInfoImage:
-                default: quay.io/vemporop/fdo-serviceinfo-api-server:1.0
+                default: quay.io/vemporop/fdo-serviceinfo-api-server:rhel9.3
                 description: ServiceInfo API server container image
                 type: string
             type: object

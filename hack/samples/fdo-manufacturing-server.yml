@@ -3,6 +3,7 @@ kind: FDOManufacturingServer
 metadata:
   name: manufacturing-server
 spec:
+  image: quay.io/vemporop/fdo-manufacturing-server:rhel9.3
   protocols:
     plainDI: false
     diun:

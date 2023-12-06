@@ -2,4 +2,5 @@ apiVersion: fdo.redhat.com/v1alpha1
 kind: FDORendezvousServer
 metadata:
   name: rendezvous-server
-spec: {}
+spec:
+  image: quay.io/vemporop/fdo-rendezvous-server:rhel9.3

@@ -36,6 +36,7 @@ spec:
             description: FDOManufacturingServerSpec defines the desired state of FDOManufacturingServer
             properties:
               image:
+                default: quay.io/vemporop/fdo-manufacturing-server:rhel9.3
                 description: Container image
                 type: string
               logLevel:

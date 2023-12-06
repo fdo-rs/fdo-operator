@@ -43,7 +43,7 @@ type FDOManufacturingServerReconciler struct {
 
 const (
 	manufacturingConfigMapTemplate = "%s-config"
-	manufacturingDefaultImage      = "quay.io/vemporop/fdo-manufacturing-server:1.0"
+	manufacturingDefaultImage      = "quay.io/vemporop/fdo-manufacturing-server:rhel9.3"
 )
 
 //+kubebuilder:rbac:groups=fdo.redhat.com,resources=fdomanufacturingservers,verbs=get;list;watch;create;update;patch;delete
