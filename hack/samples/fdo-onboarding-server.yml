@@ -15,3 +15,6 @@ spec:
         mayFail: false
         returnStdOut: true
         returnStdErr: true
+    initialUser:
+        username: admin
+        password: admin

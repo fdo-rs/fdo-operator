@@ -84,6 +84,8 @@ spec:
                     type: array
                   initialUser:
                     properties:
+                      password:
+                        type: string
                       sshKeys:
                         items:
                           type: string
@@ -91,7 +93,6 @@ spec:
                       username:
                         type: string
                     required:
-                    - sshKeys
                     - username
                     type: object
                 type: object
