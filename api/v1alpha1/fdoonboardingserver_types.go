@@ -76,7 +76,8 @@ type ServiceInfo struct {
 
 type InitialUser struct {
 	Username string   `json:"username"`
-	SSHKeys  []string `json:"sshKeys"`
+	Password string   `json:"password,omitempty"`
+	SSHKeys  []string `json:"sshKeys,omitempty"`
 }
 
 type Command struct {

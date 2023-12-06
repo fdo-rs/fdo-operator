@@ -125,6 +125,7 @@ type ServiceInfo struct {
 
 type ServiceInfoInitialUser struct {
 	Username string   `yaml:"username"`
+	Password string   `yaml:"password"`
 	SSHKeys  []string `yaml:"sshkeys"`
 }
 
@@ -163,9 +164,16 @@ func (c *ServiceInfoAPIServerConfig) setValues(server *fdov1alpha1.FDOOnboarding
 		return nil
 	}
 	if server.Spec.ServiceInfo.InitialUser != nil {
+
+		if server.Spec.ServiceInfo.InitialUser.Password == "" &&
+			(server.Spec.ServiceInfo.InitialUser.SSHKeys == nil || len(server.Spec.ServiceInfo.InitialUser.SSHKeys) == 0) {
+			return fmt.Errorf("at least one authentication method is required for initial user")
+		}
+
 		user := server.Spec.ServiceInfo.InitialUser
 		c.ServiceInfo.InitialUser = &ServiceInfoInitialUser{
 			Username: user.Username,
+			Password: user.Password,
 			SSHKeys:  user.SSHKeys,
 		}
 	}
