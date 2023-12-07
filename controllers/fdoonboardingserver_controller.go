@@ -275,6 +275,18 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 					},
 				},
 			},
+			{
+				Name: "sessions",
+				VolumeSource: corev1.VolumeSource{
+					EmptyDir: &corev1.EmptyDirVolumeSource{},
+				},
+			},
+			{
+				Name: "device-specific-serviceinfo",
+				VolumeSource: corev1.VolumeSource{
+					EmptyDir: &corev1.EmptyDirVolumeSource{},
+				},
+			},
 		}
 
 		for _, f := range files {
@@ -335,6 +347,16 @@ func (r *FDOOnboardingServerReconciler) createOrUpdateDeployment(log logr.Logger
 								MountPath: "/etc/fdo/keys/device_ca_cert.pem",
 								SubPath:   "device_ca_cert.pem",
 								ReadOnly:  true,
+							},
+							{
+								Name:      "sessions",
+								MountPath: "/etc/fdo/sessions",
+								ReadOnly:  false,
+							},
+							{
+								Name:      "device-specific-serviceinfo",
+								MountPath: "/etc/fdo/keys/device_specific_serviceinfo",
+								ReadOnly:  false,
 							},
 						},
 						SecurityContext: &corev1.SecurityContext{

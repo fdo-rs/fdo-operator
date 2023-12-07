@@ -195,6 +195,11 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 								SubPath:   "device_ca_cert.pem",
 								ReadOnly:  true,
 							},
+							{
+								Name:      "sessions",
+								MountPath: "/etc/fdo/sessions",
+								ReadOnly:  false,
+							},
 						},
 						SecurityContext: &corev1.SecurityContext{
 							AllowPrivilegeEscalation: &privilegeEscalation,
@@ -327,6 +332,12 @@ func (r *FDOManufacturingServerReconciler) createOrUpdateDeployment(log logr.Log
 								},
 								Optional: &optional,
 							},
+						},
+					},
+					{
+						Name: "sessions",
+						VolumeSource: corev1.VolumeSource{
+							EmptyDir: &corev1.EmptyDirVolumeSource{},
 						},
 					},
 				},
