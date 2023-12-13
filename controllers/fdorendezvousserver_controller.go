@@ -157,6 +157,16 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 								SubPath:   "manufacturer_cert.pem",
 								ReadOnly:  true,
 							},
+							{
+								Name:      "registered",
+								MountPath: "/etc/fdo/registered",
+								ReadOnly:  false,
+							},
+							{
+								Name:      "sessions",
+								MountPath: "/etc/fdo/sessions",
+								ReadOnly:  false,
+							},
 						},
 						SecurityContext: &corev1.SecurityContext{
 							AllowPrivilegeEscalation: &privilegeEscalation,
@@ -192,6 +202,18 @@ func (r *FDORendezvousServerReconciler) createOrUpdateDeployment(log logr.Logger
 								},
 								Optional: &optional,
 							},
+						},
+					},
+					{
+						Name: "registered",
+						VolumeSource: corev1.VolumeSource{
+							EmptyDir: &corev1.EmptyDirVolumeSource{},
+						},
+					},
+					{
+						Name: "sessions",
+						VolumeSource: corev1.VolumeSource{
+							EmptyDir: &corev1.EmptyDirVolumeSource{},
 						},
 					},
 				},

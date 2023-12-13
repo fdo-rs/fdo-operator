@@ -330,8 +330,8 @@ type RendezvousServerConfig struct {
 }
 
 func (c *RendezvousServerConfig) setValues(s *fdov1alpha1.FDORendezvousServer) error {
-	c.StorageDriver = NewDriver("/etc/fdo/rendezvous_registered/")
-	c.SessionStoreDriver = NewDriver("/etc/fdo/rendezvous_sessions/")
+	c.StorageDriver = NewDriver("/etc/fdo/registered/")
+	c.SessionStoreDriver = NewDriver("/etc/fdo/sessions/")
 	c.TrustedManufacturerKeysPath = "/etc/fdo/keys/manufacturer_cert.pem"
 	c.Bind = "0.0.0.0:8082"
 	return nil
