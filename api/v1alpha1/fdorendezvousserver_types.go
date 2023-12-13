@@ -29,7 +29,7 @@ type FDORendezvousServerSpec struct {
 	// Important: Run "make" to regenerate code after modifying this file
 
 	// Rendezvous server container image
-	// +kubebuilder:default="quay.io/vemporop/fdo-rendezvous-server:rhel9.3"
+	// +kubebuilder:default="quay.io/fido-fdo/rendezvous-server:0.4"
 	Image string `json:"image,omitempty"`
 }
 
