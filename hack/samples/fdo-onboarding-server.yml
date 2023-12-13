@@ -3,8 +3,8 @@ kind: FDOOnboardingServer
 metadata:
   name: onboarding-server
 spec:
-  ownerOnboardingImage: quay.io/vemporop/fdo-owner-onboarding-server:rhel9.3
-  serviceInfoImage: quay.io/vemporop/fdo-serviceinfo-api-server:rhel9.3
+  ownerOnboardingImage: quay.io/fido-fdo/owner-onboarding-server:0.4
+  serviceInfoImage: quay.io/fido-fdo/serviceinfo-api-server:0.4
   serviceInfo:
     commands:
       - command: /bin/sh

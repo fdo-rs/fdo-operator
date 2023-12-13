@@ -36,7 +36,7 @@ spec:
             description: FDORendezvousServerSpec defines the desired state of FDORendezvousServer
             properties:
               image:
-                default: quay.io/vemporop/fdo-rendezvous-server:rhel9.3
+                default: quay.io/fido-fdo/rendezvous-server:0.4
                 description: Rendezvous server container image
                 type: string
             type: object

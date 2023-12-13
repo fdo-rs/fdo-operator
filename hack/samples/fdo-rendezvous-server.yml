@@ -3,4 +3,4 @@ kind: FDORendezvousServer
 metadata:
   name: rendezvous-server
 spec:
-  image: quay.io/vemporop/fdo-rendezvous-server:rhel9.3
+  image: quay.io/fido-fdo/rendezvous-server:0.4

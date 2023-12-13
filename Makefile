@@ -42,7 +42,7 @@ BUNDLE_GEN_FLAGS ?= -q --overwrite --version $(VERSION) $(BUNDLE_METADATA_OPTS)
 CONTAINER_TOOL ?= podman
 
 # ADMIN_CLI_IMG defines an image for running FDO admin commands without installing FDO binaries
-ADMIN_CLI_IMG ?= quay.io/vemporop/fdo-admin-cli:rhel9.3
+ADMIN_CLI_IMG ?= quay.io/fido-fdo/admin-cli:0.4
 
 # FDO_CERT_ORG defines the org of test FDO certificates
 FDO_CERT_ORG ?= Example.com

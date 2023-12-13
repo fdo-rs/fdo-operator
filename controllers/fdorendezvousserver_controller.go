@@ -38,7 +38,7 @@ import (
 
 const (
 	rendezvousConfigMapTemplate = "%s-config"
-	rendezvousImage             = "quay.io/vemporop/fdo-rendezvous-server:rhel9.3"
+	rendezvousImage             = "quay.io/fido-fdo/rendezvous-server:0.4"
 )
 
 // FDORendezvousServerReconciler reconciles a FDORendezvousServer object

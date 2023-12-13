@@ -23,9 +23,7 @@ Keep in mind that the operator is a work in progress, is highly opinionated and 
 
 * The log level inside FDO containers is TRACE by default and currently cannot be changed.
 
-* The container images used by the operator by default are stable, but may not be of the latest version. We are planning to to use either the [development FDO images](https://quay.io/organization/fido-fdo), or Red Hat certified images for FDO when they become available. This might require some development.
-
-* Make sure you use compatible client-server versions. It is probably best to use at least the same RHEL version on both sides to avoid issues, e.g. RHEL 9.3. The server CRDs allow changing server images. See the files in [hack/samples](hack/samples/) for examples.
+* Support multiple versions of the FDO server implementation for compatibility reasons, e.g. by maintaining multiple versions of the operator.
 
 * It is not possible to explicitly specify container resources (requests/limits). This should be changed in the future.
 
@@ -55,6 +53,16 @@ Keep in mind that the operator is a work in progress, is highly opinionated and 
 
   * How can we make it easier for a user to work with (create, attach) the required persistent volumes?
   * How can we enforce the mandatory secrets (keys, certificates), and respond to any changes in them?
+
+## FDO Server Images
+
+* The operator uses stable [development FDO images](https://quay.io/organization/fido-fdo) by default, although they may not be of the latest version.
+
+* The server CRDs allow changing server images. See the files in [hack/samples](hack/samples/) for examples.
+
+* Make sure to use a server version that is compatible with your FDO client.
+
+* Keep in mind that we currently do not maintain multiple operator versions, therefore cutting edge or too old FDO server images may not supported (e.g. because of incompatible configuration files).
 
 ## Getting Started
 You will need an OpenShift cluster to run against. You can use [Red Hat OpenShift Local](https://developers.redhat.com/products/openshift-local/overview) to get a local cluster for testing, or run against a remote cluster.
