@@ -39,7 +39,7 @@ jobs:
       VERSION: ${{ needs.get-operator-version.outputs.version }}
     steps:
       - name: Checkout current repository for the Dockerfiles
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Login to the container registry
         uses: docker/login-action@v3
